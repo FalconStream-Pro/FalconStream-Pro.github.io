@@ -39,13 +39,13 @@ export default function ChannelList({
   }, [channels]);
 
   const filtered = useMemo(() => {
-    let list = [...channels];
+    let list = channels;
 
     if (tab === 'favorites') {
       list = list.filter((ch) => favorites.includes(ch.id));
     } else if (tab === 'recent') {
       list = list.filter((ch) => recentIds.includes(ch.id));
-      list.sort((a, b) => recentIds.indexOf(a.id) - recentIds.indexOf(b.id));
+      list = [...list].sort((a, b) => recentIds.indexOf(a.id) - recentIds.indexOf(b.id));
     }
 
     if (selectedGroup) {
@@ -62,7 +62,8 @@ export default function ChannelList({
     }
 
     // Apply sorting (only for non-recent tabs)
-    if (tab !== 'recent') {
+    if (tab !== 'recent' && sort !== 'default') {
+      list = [...list];
       switch (sort) {
         case 'az':
           list.sort((a, b) => a.name.localeCompare(b.name));
