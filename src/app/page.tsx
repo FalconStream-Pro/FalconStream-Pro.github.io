@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { parseM3U, Channel } from '@/lib/m3uParser';
+import { presetPlaylists, PresetPlaylist } from '@/lib/presetPlaylists';
 import {
   getConsent,
   setConsent,
@@ -26,6 +27,8 @@ export default function Home() {
   const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [loadingPreset, setLoadingPreset] = useState<string | null>(null);
+  const [presetError, setPresetError] = useState('');
 
   // Hydration
   useEffect(() => {
@@ -78,6 +81,30 @@ export default function Home() {
     setChannels([]);
     setActiveChannel(null);
   };
+
+  const handlePresetSelect = useCallback(async (preset: PresetPlaylist) => {
+    setLoadingPreset(preset.id);
+    setPresetError('');
+    try {
+      const res = await fetch(preset.url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      const parsed = parseM3U(text);
+      if (parsed.length === 0) {
+        setPresetError('No channels found in this playlist. It may be temporarily unavailable.');
+        return;
+      }
+      setChannels(parsed);
+      setActiveChannel(parsed[0]);
+      addRecent(parsed[0].id, parsed[0].name);
+      setRecentIds(getRecent().map((r) => r.id));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setPresetError(`Failed to load playlist: ${message}. Please try again or check your connection.`);
+    } finally {
+      setLoadingPreset(null);
+    }
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -133,8 +160,49 @@ export default function Home() {
               🦅 FalconStream Pro
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Upload an M3U playlist to start streaming
+              Upload an M3U/M3U8 playlist or browse preset channels to start streaming
             </p>
+          </div>
+
+          {/* Preset Channel Cards */}
+          <div className="mb-6 w-full max-w-xl px-4">
+            <p className="mb-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Quick Start — Browse Channels
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {presetPlaylists.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => handlePresetSelect(preset)}
+                  disabled={loadingPreset !== null}
+                  aria-label={`Load ${preset.name}`}
+                  aria-busy={loadingPreset === preset.id}
+                  className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-blue-400 hover:shadow-md disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500"
+                >
+                  <span className="text-3xl">{preset.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {preset.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {preset.description}
+                    </p>
+                  </div>
+                  {loadingPreset === preset.id && (
+                    <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                  )}
+                </button>
+              ))}
+            </div>
+            {presetError && (
+              <p className="mt-2 text-center text-sm text-red-500">{presetError}</p>
+            )}
+          </div>
+
+          <div className="mb-4 flex w-full max-w-xl items-center gap-3 px-4">
+            <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+            <span className="text-xs text-gray-400 dark:text-gray-500">or upload your own</span>
+            <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
           </div>
 
           <UploadZone onFileLoaded={handleFileLoaded} onUrlLoaded={handleFileLoaded} />
