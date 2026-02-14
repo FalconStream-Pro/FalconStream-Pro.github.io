@@ -74,8 +74,6 @@ export const metadata: Metadata = {
     images: [
       {
         url: LOGO_URL,
-        width: 1200,
-        height: 630,
         alt: "FalconStream Pro Logo",
         type: "image/webp",
       },

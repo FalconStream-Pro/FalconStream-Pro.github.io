@@ -131,7 +131,7 @@ export default function Home() {
       <div className="flex h-screen flex-col items-center justify-center bg-gray-950">
         <img
           src={LOGO_URL}
-          alt="FalconStream Pro"
+          alt="FalconStream Pro - Loading"
           className="mb-4 h-16 w-16 rounded-xl object-contain"
         />
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
