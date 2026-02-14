@@ -12,11 +12,18 @@ export default function ConsentModal({ onAccept }: ConsentModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 sm:p-8">
-        <div className="mb-4 flex items-center gap-3">
-          <span className="text-3xl">⚠️</span>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
-            Legal Disclaimer
-          </h2>
+        <div className="mb-4 flex flex-col items-center gap-3 sm:flex-row">
+          <img
+            src="https://res.cloudinary.com/dkj22lm1g/image/upload/v1771081619/FalconStream-Pro_jqpcgb.webp"
+            alt="FalconStream Pro"
+            className="h-14 w-14 rounded-xl object-contain"
+          />
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
+              FalconStream Pro
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Legal Disclaimer</p>
+          </div>
         </div>
 
         <div className="mb-6 max-h-60 overflow-y-auto rounded-lg bg-gray-50 p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-800 dark:text-gray-300">
