@@ -26,6 +26,7 @@ export default function ChannelList({
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<TabType>('all');
   const [selectedGroup, setSelectedGroup] = useState('');
+  const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
 
   const groups = useMemo(() => {
     const g = new Set<string>();
@@ -135,13 +136,13 @@ export default function ChannelList({
                   : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
               }`}
             >
-              {channel.logo ? (
+              {channel.logo && !brokenLogos.has(channel.id) ? (
                 <img
                   src={channel.logo}
                   alt=""
                   className="h-8 w-8 shrink-0 rounded object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
+                  onError={() => {
+                    setBrokenLogos((prev) => new Set(prev).add(channel.id));
                   }}
                 />
               ) : (
