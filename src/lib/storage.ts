@@ -86,3 +86,15 @@ export function setTheme(theme: 'dark' | 'light'): void {
   if (!isBrowser()) return;
   localStorage.setItem(THEME_KEY, theme);
 }
+
+const AUTOPLAY_KEY = 'falconstream-autoplay';
+
+export function getAutoPlay(): boolean {
+  if (!isBrowser()) return false;
+  return localStorage.getItem(AUTOPLAY_KEY) === 'true';
+}
+
+export function setAutoPlay(value: boolean): void {
+  if (!isBrowser()) return;
+  localStorage.setItem(AUTOPLAY_KEY, String(value));
+}
