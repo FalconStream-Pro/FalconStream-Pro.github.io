@@ -1,0 +1,29 @@
+{
+  "name": "FalconStream Pro",
+  "short_name": "FalconStream",
+  "description": "A modern, web-based M3U playlist player for streaming live content directly in your browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_192,h_192,c_fit/v1771081619/FalconStream-Pro_jqpcgb.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_512,h_512,c_fit/v1771081619/FalconStream-Pro_jqpcgb.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "https://res.cloudinary.com/dkj22lm1g/image/upload/w_512,h_512,c_fit/v1771081619/FalconStream-Pro_jqpcgb.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["entertainment", "utilities"]
+}

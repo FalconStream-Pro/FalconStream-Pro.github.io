@@ -18,6 +18,9 @@ import UploadZone from './components/UploadZone';
 import VideoPlayer from './components/VideoPlayer';
 import ChannelList from './components/ChannelList';
 
+const LOGO_URL =
+  'https://res.cloudinary.com/dkj22lm1g/image/upload/v1771081619/FalconStream-Pro_jqpcgb.webp';
+
 export default function Home() {
   const [consented, setConsented] = useState(false);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -125,7 +128,12 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-950">
+      <div className="flex h-screen flex-col items-center justify-center bg-gray-950">
+        <img
+          src={LOGO_URL}
+          alt="FalconStream Pro"
+          className="mb-4 h-16 w-16 rounded-xl object-contain"
+        />
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
       </div>
     );
@@ -156,8 +164,9 @@ export default function Home() {
           </div>
 
           <div className="mb-6 text-center">
-            <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
-              🦅 FalconStream Pro
+            <h1 className="mb-2 flex items-center justify-center gap-2 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+              <img src={LOGO_URL} alt="FalconStream Pro" className="h-10 w-10 rounded-lg object-contain sm:h-12 sm:w-12" />
+              FalconStream Pro
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Upload an M3U/M3U8 playlist or browse preset channels to start streaming
@@ -228,8 +237,9 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-              🦅 FalconStream Pro
+            <h1 className="flex items-center gap-2 text-base font-bold text-gray-900 dark:text-white sm:text-lg">
+              <img src={LOGO_URL} alt="FalconStream Pro" className="h-7 w-7 rounded object-contain" />
+              FalconStream Pro
             </h1>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
