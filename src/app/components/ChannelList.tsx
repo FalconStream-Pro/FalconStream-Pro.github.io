@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { Channel } from '@/lib/m3uParser';
 import SearchBar from './SearchBar';
 
 type TabType = 'all' | 'favorites' | 'recent';
+type SortType = 'default' | 'az' | 'za' | 'group';
 
 interface ChannelListProps {
   channels: Channel[];
@@ -27,6 +28,9 @@ export default function ChannelList({
   const [tab, setTab] = useState<TabType>('all');
   const [selectedGroup, setSelectedGroup] = useState('');
   const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
+  const [sort, setSort] = useState<SortType>('default');
+  const listRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLDivElement>(null);
 
   const groups = useMemo(() => {
     const g = new Set<string>();
@@ -35,7 +39,7 @@ export default function ChannelList({
   }, [channels]);
 
   const filtered = useMemo(() => {
-    let list = channels;
+    let list = [...channels];
 
     if (tab === 'favorites') {
       list = list.filter((ch) => favorites.includes(ch.id));
@@ -57,8 +61,30 @@ export default function ChannelList({
       );
     }
 
+    // Apply sorting (only for non-recent tabs)
+    if (tab !== 'recent') {
+      switch (sort) {
+        case 'az':
+          list.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'za':
+          list.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case 'group':
+          list.sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
+          break;
+      }
+    }
+
     return list;
-  }, [channels, search, tab, selectedGroup, favorites, recentIds]);
+  }, [channels, search, tab, selectedGroup, favorites, recentIds, sort]);
+
+  // Scroll to active channel when it changes
+  useEffect(() => {
+    if (activeRef.current && listRef.current) {
+      activeRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeId]);
 
   const handleKeyNav = useCallback(
     (e: React.KeyboardEvent, channel: Channel) => {
@@ -89,27 +115,40 @@ export default function ChannelList({
         ))}
       </div>
 
-      {/* Search + Group Filter */}
+      {/* Search + Group Filter + Sort */}
       <div className="space-y-2 p-3">
         <SearchBar value={search} onChange={setSearch} channelCount={channels.length} />
-        {groups.length > 1 && (
+        <div className="flex gap-2">
+          {groups.length > 1 && (
+            <select
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+              className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            >
+              <option value="">All Categories ({groups.length})</option>
+              {groups.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          )}
           <select
-            value={selectedGroup}
-            onChange={(e) => setSelectedGroup(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortType)}
+            className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            aria-label="Sort channels"
           >
-            <option value="">All Categories ({groups.length})</option>
-            {groups.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
+            <option value="default">Default</option>
+            <option value="az">A → Z</option>
+            <option value="za">Z → A</option>
+            <option value="group">By Group</option>
           </select>
-        )}
+        </div>
       </div>
 
       {/* Channel List */}
-      <div className="flex-1 overflow-y-auto" role="listbox" aria-label="Channel list">
+      <div ref={listRef} className="flex-1 overflow-y-auto" role="listbox" aria-label="Channel list">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center">
             <span className="text-3xl">📺</span>
@@ -125,6 +164,7 @@ export default function ChannelList({
           filtered.map((channel) => (
             <div
               key={channel.id}
+              ref={activeId === channel.id ? activeRef : undefined}
               role="option"
               tabIndex={0}
               aria-selected={activeId === channel.id}
