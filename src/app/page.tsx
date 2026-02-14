@@ -20,6 +20,10 @@ import UploadZone from './components/UploadZone';
 import VideoPlayer from './components/VideoPlayer';
 import ChannelList from './components/ChannelList';
 import KeyboardShortcutsPanel from './components/KeyboardShortcutsPanel';
+import ToastContainer, { showToast } from './components/Toast';
+import HeroSection from './components/HeroSection';
+import CategoryRow from './components/CategoryRow';
+import ScrollToTop from './components/ScrollToTop';
 
 const LOGO_URL =
   'https://res.cloudinary.com/dkj22lm1g/image/upload/v1771081619/FalconStream-Pro_jqpcgb.webp';
@@ -39,6 +43,14 @@ export default function Home() {
   const [autoPlay, setAutoPlayState] = useState(false);
   const [presetRegionFilter, setPresetRegionFilter] = useState('');
   const [presetSearch, setPresetSearch] = useState('');
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+
+  // Track header opacity on scroll
+  useEffect(() => {
+    const handler = () => setHeaderScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
 
   // Group presets by region
   const presetRegions = useMemo(() => {
@@ -50,6 +62,11 @@ export default function Home() {
     });
     return regions;
   }, []);
+
+  const featuredPresets = useMemo(
+    () => presetPlaylists.filter((p) => p.region === 'Featured'),
+    []
+  );
 
   const filteredPresets = useMemo(() => {
     let list = presetPlaylists;
@@ -103,8 +120,10 @@ export default function Home() {
   }, []);
 
   const handleToggleFavorite = useCallback((id: string) => {
+    const wasFav = getFavorites().includes(id);
     const updated = toggleFavorite(id);
     setFavoritesState(updated);
+    showToast(wasFav ? 'Removed from favorites' : 'Added to favorites', 'success');
   }, []);
 
   const handleThemeToggle = () => {
@@ -140,6 +159,7 @@ export default function Home() {
   const handlePresetSelect = useCallback(async (preset: PresetPlaylist) => {
     setLoadingPreset(preset.id);
     setPresetError('');
+    showToast(`Loading ${preset.name}...`, 'info');
     try {
       const res = await fetch(preset.url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -147,15 +167,18 @@ export default function Home() {
       const parsed = parseM3U(text);
       if (parsed.length === 0) {
         setPresetError('No channels found in this playlist. It may be temporarily unavailable.');
+        showToast('No channels found in this playlist', 'error');
         return;
       }
       setChannels(parsed);
       setActiveChannel(parsed[0]);
       addRecent(parsed[0].id, parsed[0].name);
       setRecentIds(getRecent().map((r) => r.id));
+      showToast(`Loaded ${parsed.length} channels from ${preset.name}`, 'success');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setPresetError(`Failed to load playlist: ${message}. Please try again or check your connection.`);
+      showToast('Failed to load playlist', 'error');
     } finally {
       setLoadingPreset(null);
     }
@@ -238,30 +261,55 @@ export default function Home() {
 
   // Upload state - no channels loaded yet
   if (channels.length === 0) {
+    const isSearching = presetSearch.trim() !== '' || presetRegionFilter !== '';
+
     return (
       <div className={theme}>
-        <div className="flex min-h-screen flex-col items-center bg-white dark:bg-gray-950">
-          {/* Header */}
-          <div className="sticky top-0 z-10 flex w-full items-center justify-between border-b border-gray-200 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
+        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+          {/* Sticky Header with scroll effect */}
+          <div className={`sticky top-0 z-10 flex w-full items-center justify-between border-b px-4 py-3 transition-all ${
+            headerScrolled
+              ? 'border-gray-200 bg-white/95 shadow-sm backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/95'
+              : 'border-transparent bg-white/80 backdrop-blur-md dark:bg-gray-950/80'
+          }`}>
             <h1 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white sm:text-xl">
               <img src={LOGO_URL} alt="FalconStream Pro" className="h-8 w-8 rounded-lg object-contain" />
               FalconStream Pro
             </h1>
-            <button
-              onClick={handleThemeToggle}
-              className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowShortcuts(true)}
+                className="hidden rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 sm:block"
+                aria-label="Keyboard shortcuts"
+                title="Keyboard shortcuts (?)"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+              </button>
+              <button
+                onClick={handleThemeToggle}
+                className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
+            </div>
           </div>
 
-          <div className="w-full max-w-5xl px-4 py-8">
-            <div className="mb-8 text-center">
+          <div className="w-full max-w-6xl mx-auto px-4 py-6 animate-fade-in">
+            <div className="mb-6 text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Browse {presetPlaylists.length} preset channel collections from around the world, or upload your own M3U playlist
               </p>
             </div>
+
+            {/* Hero Banner */}
+            <HeroSection
+              featured={featuredPresets}
+              onSelect={handlePresetSelect}
+              loading={loadingPreset !== null}
+            />
 
             {/* Region filter + Search */}
             <div className="mb-6 flex flex-col items-center gap-3 sm:flex-row">
@@ -276,6 +324,15 @@ export default function Home() {
                   placeholder="Search countries & categories..."
                   className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                 />
+                {presetSearch && (
+                  <button
+                    onClick={() => setPresetSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    aria-label="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
               <div className="flex flex-wrap justify-center gap-2">
                 <button
@@ -304,45 +361,63 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Preset Channel Cards */}
-            <div className="mb-8">
-              {filteredPresets.length === 0 ? (
-                <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                  No playlists match your search.
-                </p>
-              ) : (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                  {filteredPresets.map((preset) => (
-                    <button
-                      key={preset.id}
-                      onClick={() => handlePresetSelect(preset)}
-                      disabled={loadingPreset !== null}
-                      aria-label={`Load ${preset.name}`}
-                      aria-busy={loadingPreset === preset.id}
-                      className="group flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-4 text-center transition-all hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500"
-                    >
-                      <span className="text-3xl transition-transform group-hover:scale-110">{preset.icon}</span>
-                      <div className="min-w-0 w-full">
-                        <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                          {preset.name}
-                        </p>
-                        {preset.region && (
-                          <p className="truncate text-xs text-gray-400 dark:text-gray-500">
-                            {preset.region}
+            {presetError && (
+              <p className="mb-4 text-center text-sm text-red-500">{presetError}</p>
+            )}
+
+            {/* Netflix-style horizontal rows by region OR flat grid when searching */}
+            {isSearching ? (
+              <div className="mb-8">
+                {filteredPresets.length === 0 ? (
+                  <div className="flex flex-col items-center py-12 text-center">
+                    <span className="mb-2 text-4xl">🔍</span>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      No playlists match your search.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {filteredPresets.map((preset) => (
+                      <button
+                        key={preset.id}
+                        onClick={() => handlePresetSelect(preset)}
+                        disabled={loadingPreset !== null}
+                        aria-label={`Load ${preset.name}`}
+                        aria-busy={loadingPreset === preset.id}
+                        className="group flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-4 text-center transition-all hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500"
+                      >
+                        <span className="text-3xl transition-transform group-hover:scale-110">{preset.icon}</span>
+                        <div className="min-w-0 w-full">
+                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                            {preset.name}
                           </p>
+                          {preset.region && (
+                            <p className="truncate text-xs text-gray-400 dark:text-gray-500">
+                              {preset.region}
+                            </p>
+                          )}
+                        </div>
+                        {loadingPreset === preset.id && (
+                          <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                         )}
-                      </div>
-                      {loadingPreset === preset.id && (
-                        <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {presetError && (
-                <p className="mt-3 text-center text-sm text-red-500">{presetError}</p>
-              )}
-            </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="mb-8">
+                {Array.from(presetRegions.entries()).map(([region, regionPresets]) => (
+                  <CategoryRow
+                    key={region}
+                    title={region}
+                    presets={regionPresets}
+                    onSelect={handlePresetSelect}
+                    loadingId={loadingPreset}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="mb-6 flex w-full items-center gap-3">
               <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
@@ -353,13 +428,25 @@ export default function Home() {
             <UploadZone onFileLoaded={handleFileLoaded} onUrlLoaded={handleFileLoaded} />
           </div>
 
-          {/* Footer */}
-          <footer className="mt-auto w-full border-t border-gray-200 py-4 text-center text-xs text-gray-400 dark:border-gray-800 dark:text-gray-500">
-            <p>FalconStream Pro — {presetPlaylists.length} preset collections • Open source M3U/HLS player</p>
-            <p className="mt-1">Press <kbd className="rounded border border-gray-300 px-1 py-0.5 font-mono text-xs dark:border-gray-600">?</kbd> for keyboard shortcuts</p>
+          {/* Enhanced Footer */}
+          <footer className="mt-auto w-full border-t border-gray-200 px-4 py-6 dark:border-gray-800">
+            <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center text-xs text-gray-400 dark:text-gray-500">
+              <div className="flex items-center gap-2">
+                <img src={LOGO_URL} alt="" className="h-5 w-5 rounded object-contain opacity-50" />
+                <span className="font-medium">FalconStream Pro</span>
+              </div>
+              <p>{presetPlaylists.length} preset collections • Open source M3U/HLS player • Dark mode • Favorites • Picture-in-Picture</p>
+              <div className="flex items-center gap-4">
+                <span>Press <kbd className="rounded border border-gray-300 px-1 py-0.5 font-mono text-xs dark:border-gray-600">?</kbd> for keyboard shortcuts</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline">Built with Next.js &amp; HLS.js</span>
+              </div>
+            </div>
           </footer>
         </div>
 
+        <ToastContainer />
+        <ScrollToTop />
         {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
       </div>
     );
@@ -465,7 +552,7 @@ export default function Home() {
                   onStreamEnded={handleStreamEnded}
                 />
                 <div className="mt-4 flex items-start justify-between gap-4">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <h2 className="truncate text-lg font-semibold text-gray-900 dark:text-white">
                       {activeChannel.name}
                     </h2>
@@ -480,17 +567,55 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                  <button
-                    onClick={() => handleToggleFavorite(activeChannel.id)}
-                    className="shrink-0 rounded-lg p-2 text-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                    aria-label={
-                      favorites.includes(activeChannel.id)
-                        ? 'Remove from favorites'
-                        : 'Add to favorites'
-                    }
-                  >
-                    {favorites.includes(activeChannel.id) ? '⭐' : '☆'}
-                  </button>
+                  <div className="flex shrink-0 items-center gap-1">
+                    {/* Previous channel button */}
+                    {(() => {
+                      const idx = channels.findIndex((ch) => ch.id === activeChannel.id);
+                      return (
+                        <>
+                          <button
+                            onClick={() => {
+                              if (idx > 0) handleChannelSelect(channels[idx - 1]);
+                            }}
+                            disabled={idx <= 0}
+                            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                            aria-label="Previous channel"
+                            title="Previous channel (↑)"
+                          >
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          {/* Next channel button */}
+                          <button
+                            onClick={() => {
+                              if (idx < channels.length - 1) handleChannelSelect(channels[idx + 1]);
+                            }}
+                            disabled={idx >= channels.length - 1}
+                            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                            aria-label="Next channel"
+                            title="Next channel (↓)"
+                          >
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </>
+                      );
+                    })()}
+                    {/* Favorite button */}
+                    <button
+                      onClick={() => handleToggleFavorite(activeChannel.id)}
+                      className="shrink-0 rounded-lg p-2 text-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                      aria-label={
+                        favorites.includes(activeChannel.id)
+                          ? 'Remove from favorites'
+                          : 'Add to favorites'
+                      }
+                    >
+                      {favorites.includes(activeChannel.id) ? '⭐' : '☆'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -502,6 +627,7 @@ export default function Home() {
         </div>
       </div>
 
+      <ToastContainer />
       {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
     </div>
   );
