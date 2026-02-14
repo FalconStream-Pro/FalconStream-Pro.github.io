@@ -569,35 +569,40 @@ export default function Home() {
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
                     {/* Previous channel button */}
-                    <button
-                      onClick={() => {
-                        const idx = channels.findIndex((ch) => ch.id === activeChannel.id);
-                        if (idx > 0) handleChannelSelect(channels[idx - 1]);
-                      }}
-                      disabled={channels.findIndex((ch) => ch.id === activeChannel.id) <= 0}
-                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                      aria-label="Previous channel"
-                      title="Previous channel (↑)"
-                    >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    {/* Next channel button */}
-                    <button
-                      onClick={() => {
-                        const idx = channels.findIndex((ch) => ch.id === activeChannel.id);
-                        if (idx < channels.length - 1) handleChannelSelect(channels[idx + 1]);
-                      }}
-                      disabled={channels.findIndex((ch) => ch.id === activeChannel.id) >= channels.length - 1}
-                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                      aria-label="Next channel"
-                      title="Next channel (↓)"
-                    >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                    {(() => {
+                      const idx = channels.findIndex((ch) => ch.id === activeChannel.id);
+                      return (
+                        <>
+                          <button
+                            onClick={() => {
+                              if (idx > 0) handleChannelSelect(channels[idx - 1]);
+                            }}
+                            disabled={idx <= 0}
+                            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                            aria-label="Previous channel"
+                            title="Previous channel (↑)"
+                          >
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          {/* Next channel button */}
+                          <button
+                            onClick={() => {
+                              if (idx < channels.length - 1) handleChannelSelect(channels[idx + 1]);
+                            }}
+                            disabled={idx >= channels.length - 1}
+                            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                            aria-label="Next channel"
+                            title="Next channel (↓)"
+                          >
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </>
+                      );
+                    })()}
                     {/* Favorite button */}
                     <button
                       onClick={() => handleToggleFavorite(activeChannel.id)}
