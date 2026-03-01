@@ -284,7 +284,7 @@ export default function Home() {
           )}>
             <h1 className="flex items-center gap-2 text-lg font-bold text-foreground sm:text-xl">
               <img src={LOGO_URL} alt="FalconStream Pro" className="h-8 w-8 rounded-lg object-contain" />
-              <span className="hidden xs:inline">FalconStream Pro</span>
+              <span className="hidden sm:inline">FalconStream Pro</span>
             </h1>
             <div className="flex items-center gap-1 sm:gap-2">
               <Button

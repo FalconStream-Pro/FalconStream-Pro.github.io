@@ -35,7 +35,7 @@ export default function HeroSection({ featured, onSelect, loading }: HeroSection
 
       <div className="relative flex flex-col items-start gap-3 px-5 py-8 sm:gap-4 sm:px-10 sm:py-14 md:py-16">
         <Badge variant="secondary" className="border-white/20 bg-white/10 text-white/90 backdrop-blur-sm">
-          <span className="mr-1.5 h-2 w-2 animate-pulse rounded-full bg-red-500 inline-block" />
+          <span className="inline-block mr-1.5 h-2 w-2 animate-pulse rounded-full bg-red-500" />
           FEATURED
         </Badge>
 
