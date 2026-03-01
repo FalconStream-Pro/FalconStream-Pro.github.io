@@ -3,6 +3,8 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import Hls from 'hls.js';
 import { getVolume, setVolume as saveVolume } from '@/lib/storage';
+import { Button } from '@/components/ui/button';
+import { Maximize, Minimize, PictureInPicture2, Loader2, Satellite } from 'lucide-react';
 
 interface VideoPlayerProps {
   url: string;
@@ -132,17 +134,17 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full overflow-hidden rounded-xl bg-black">
+    <div ref={containerRef} className="relative w-full overflow-hidden rounded-xl bg-black shadow-2xl ring-1 ring-white/10">
       {channelName && (
-        <div className="absolute left-0 right-0 top-0 z-10 bg-gradient-to-b from-black/70 to-transparent px-4 py-3">
-          <p className="truncate text-sm font-medium text-white">{channelName}</p>
+        <div className="absolute left-0 right-0 top-0 z-10 bg-gradient-to-b from-black/80 to-transparent px-4 py-3">
+          <p className="truncate text-sm font-medium text-white drop-shadow-sm">{channelName}</p>
         </div>
       )}
 
       {loading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50">
-          <div className="flex flex-col items-center gap-2">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <p className="text-sm text-gray-300">Loading stream...</p>
           </div>
         </div>
@@ -150,8 +152,8 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
 
       {error && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/80">
-          <div className="flex flex-col items-center gap-2 px-4 text-center">
-            <span className="text-4xl">📡</span>
+          <div className="flex flex-col items-center gap-3 px-4 text-center">
+            <Satellite className="h-10 w-10 text-red-400" />
             <p className="text-sm text-red-400">{error}</p>
           </div>
         </div>
@@ -166,34 +168,31 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
         onEnded={onStreamEnded}
       />
 
-      <div className="flex items-center justify-end gap-2 bg-gray-900 px-3 py-1.5">
-        <button
+      <div className="flex items-center justify-end gap-1 bg-gray-900/95 px-2 py-1 sm:px-3 sm:py-1.5 sm:gap-2">
+        <Button
           onClick={handleFullscreen}
-          className="rounded p-1.5 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700"
           title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
         >
           {isFullscreen ? (
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
-            </svg>
+            <Minimize className="h-4 w-4" />
           ) : (
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-            </svg>
+            <Maximize className="h-4 w-4" />
           )}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handlePiP}
-          className="rounded p-1.5 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700"
           title="Picture in Picture"
           aria-label="Picture in Picture"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <rect x="2" y="3" width="20" height="14" rx="2" />
-            <rect x="11" y="9" width="9" height="7" rx="1" fill="currentColor" />
-          </svg>
-        </button>
+          <PictureInPicture2 className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

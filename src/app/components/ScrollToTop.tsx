@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowUp } from 'lucide-react';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -14,14 +16,13 @@ export default function ScrollToTop() {
   if (!visible) return null;
 
   return (
-    <button
+    <Button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className="fixed bottom-4 left-4 z-50 rounded-full bg-gray-800/80 p-3 text-white shadow-lg backdrop-blur-sm transition-all hover:bg-gray-700 dark:bg-gray-700/80 dark:hover:bg-gray-600"
+      size="icon"
+      className="fixed bottom-4 left-4 z-50 h-10 w-10 animate-fade-in rounded-full shadow-lg"
       aria-label="Scroll to top"
     >
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-      </svg>
-    </button>
+      <ArrowUp className="h-5 w-5" />
+    </Button>
   );
 }

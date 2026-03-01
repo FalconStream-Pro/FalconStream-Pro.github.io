@@ -1,6 +1,10 @@
 'use client';
 
 import { useCallback, useState, DragEvent, ChangeEvent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Upload, Loader2, Link, AlertCircle } from 'lucide-react';
 
 interface UploadZoneProps {
   onFileLoaded: (content: string) => void;
@@ -63,41 +67,33 @@ export default function UploadZone({ onFileLoaded, onUrlLoaded }: UploadZoneProp
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-6 p-4">
-      <div
+    <div className="flex w-full flex-col items-center gap-6 animate-fade-in">
+      <Card
         onDragOver={(e) => {
           e.preventDefault();
           setDragging(true);
         }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        className={`flex w-full max-w-xl cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all sm:p-12 ${
+        className={`flex w-full max-w-xl cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition-all sm:p-10 ${
           dragging
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
-            : 'border-gray-300 hover:border-blue-400 dark:border-gray-600 dark:hover:border-blue-500'
+            ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10'
+            : 'border-border hover:border-primary/40 hover:shadow-md'
         }`}
       >
-        <svg
-          className="mb-4 h-12 w-12 text-gray-400 dark:text-gray-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-          />
-        </svg>
-        <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="mb-4 rounded-full bg-muted p-3">
+          <Upload className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <p className="mb-1 text-sm font-medium text-foreground">
           Drag &amp; drop your M3U file here
         </p>
-        <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-          or click to browse
+        <p className="mb-4 text-xs text-muted-foreground">
+          Supports .m3u and .m3u8 formats
         </p>
-        <label className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700">
-          Browse Files
+        <label>
+          <Button variant="default" size="sm" className="cursor-pointer" asChild>
+            <span>Browse Files</span>
+          </Button>
           <input
             type="file"
             accept=".m3u,.m3u8"
@@ -105,39 +101,42 @@ export default function UploadZone({ onFileLoaded, onUrlLoaded }: UploadZoneProp
             className="hidden"
           />
         </label>
-      </div>
+      </Card>
 
-      <div className="w-full max-w-xl">
-        <p className="mb-2 text-center text-xs text-gray-500 dark:text-gray-400">
+      <div className="w-full max-w-xl space-y-2">
+        <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+          <Link className="h-3 w-3" />
           Or load from URL
         </p>
         <div className="flex gap-2">
-          <input
+          <Input
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://example.com/playlist.m3u"
-            className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleUrlFetch();
             }}
           />
-          <button
+          <Button
             onClick={handleUrlFetch}
             disabled={loading || !url.trim()}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+            size="default"
           >
             {loading ? (
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               'Load'
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
       {error && (
-        <p className="text-center text-sm text-red-500">{error}</p>
+        <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {error}
+        </div>
       )}
     </div>
   );
