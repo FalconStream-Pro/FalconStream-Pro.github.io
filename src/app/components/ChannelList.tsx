@@ -2,7 +2,10 @@
 
 import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import { Channel } from '@/lib/m3uParser';
+import { cn } from '@/lib/utils';
 import SearchBar from './SearchBar';
+import { Badge } from '@/components/ui/badge';
+import { Star } from 'lucide-react';
 
 type TabType = 'all' | 'favorites' | 'recent';
 type SortType = 'default' | 'az' | 'za' | 'group';
@@ -97,21 +100,29 @@ export default function ChannelList({
     [onSelect]
   );
 
+  const tabItems: { value: TabType; label: string; icon: string }[] = [
+    { value: 'all', label: 'All', icon: '📺' },
+    { value: 'favorites', label: 'Favorites', icon: '⭐' },
+    { value: 'recent', label: 'Recent', icon: '🕐' },
+  ];
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-background">
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-700">
-        {(['all', 'favorites', 'recent'] as TabType[]).map((t) => (
+      <div className="flex border-b border-border">
+        {tabItems.map((t) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex-1 px-3 py-2 text-xs font-medium capitalize transition-colors ${
-              tab === t
-                ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
-                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-            }`}
+            key={t.value}
+            onClick={() => setTab(t.value)}
+            className={cn(
+              "flex-1 px-2 py-2.5 text-xs font-medium transition-colors sm:px-3",
+              tab === t.value
+                ? 'border-b-2 border-primary text-primary'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
           >
-            {t === 'favorites' ? '⭐ Favorites' : t === 'recent' ? '🕐 Recent' : '📺 All'}
+            <span className="mr-1">{t.icon}</span>
+            <span className="hidden sm:inline">{t.label}</span>
           </button>
         ))}
       </div>
@@ -124,7 +135,7 @@ export default function ChannelList({
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              className="flex-1 rounded-lg border border-input bg-background px-3 py-1.5 text-xs text-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="">All Categories ({groups.length})</option>
               {groups.map((g) => (
@@ -137,7 +148,7 @@ export default function ChannelList({
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortType)}
-            className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+            className="rounded-lg border border-input bg-background px-2 py-1.5 text-xs text-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
             aria-label="Sort channels"
           >
             <option value="default">Default</option>
@@ -153,7 +164,7 @@ export default function ChannelList({
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center">
             <span className="text-3xl">📺</span>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-sm text-muted-foreground">
               {tab === 'favorites'
                 ? 'No favorite channels yet'
                 : tab === 'recent'
@@ -171,39 +182,41 @@ export default function ChannelList({
               aria-selected={activeId === channel.id}
               onClick={() => onSelect(channel)}
               onKeyDown={(e) => handleKeyNav(e, channel)}
-              className={`group flex cursor-pointer items-center gap-3 border-b border-gray-100 px-3 py-2.5 transition-colors dark:border-gray-800 ${
+              className={cn(
+                "group flex cursor-pointer items-center gap-3 border-b border-border/50 px-3 py-2.5 transition-colors",
                 activeId === channel.id
-                  ? 'bg-blue-50 dark:bg-blue-900/30'
-                  : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
-              }`}
+                  ? 'bg-primary/10 border-l-2 border-l-primary'
+                  : 'hover:bg-muted/50'
+              )}
             >
               {channel.logo && !brokenLogos.has(channel.id) ? (
                 <img
                   src={channel.logo}
                   alt=""
-                  className="h-8 w-8 shrink-0 rounded object-contain"
+                  className="h-8 w-8 shrink-0 rounded-md object-contain"
                   onError={() => {
                     setBrokenLogos((prev) => new Set(prev).add(channel.id));
                   }}
                 />
               ) : (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-gray-200 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground">
                   TV
                 </div>
               )}
 
               <div className="min-w-0 flex-1">
                 <p
-                  className={`truncate text-sm font-medium ${
+                  className={cn(
+                    "truncate text-sm font-medium",
                     activeId === channel.id
-                      ? 'text-blue-700 dark:text-blue-300'
-                      : 'text-gray-800 dark:text-gray-200'
-                  }`}
+                      ? 'text-primary'
+                      : 'text-foreground'
+                  )}
                 >
                   {channel.name}
                 </p>
                 {channel.group && channel.group !== 'Uncategorized' && (
-                  <p className="truncate text-xs text-gray-400 dark:text-gray-500">
+                  <p className="truncate text-xs text-muted-foreground">
                     {channel.group}
                   </p>
                 )}
@@ -214,7 +227,7 @@ export default function ChannelList({
                   e.stopPropagation();
                   onToggleFavorite(channel.id);
                 }}
-                className="shrink-0 p-1 text-gray-300 transition-colors hover:text-yellow-500 dark:text-gray-600 dark:hover:text-yellow-400"
+                className="shrink-0 rounded-md p-1 transition-colors hover:bg-muted"
                 aria-label={
                   favorites.includes(channel.id)
                     ? 'Remove from favorites'
@@ -222,9 +235,9 @@ export default function ChannelList({
                 }
               >
                 {favorites.includes(channel.id) ? (
-                  <span className="text-yellow-500">★</span>
+                  <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                 ) : (
-                  <span className="opacity-0 group-hover:opacity-100">☆</span>
+                  <Star className="h-4 w-4 text-muted-foreground/30 transition-colors group-hover:text-muted-foreground" />
                 )}
               </button>
             </div>
@@ -232,8 +245,10 @@ export default function ChannelList({
         )}
       </div>
 
-      <div className="border-t border-gray-200 px-3 py-2 text-center text-xs text-gray-400 dark:border-gray-700 dark:text-gray-500">
-        {filtered.length} of {channels.length} channels
+      <div className="border-t border-border px-3 py-2 text-center">
+        <Badge variant="secondary" className="text-xs">
+          {filtered.length} of {channels.length} channels
+        </Badge>
       </div>
     </div>
   );

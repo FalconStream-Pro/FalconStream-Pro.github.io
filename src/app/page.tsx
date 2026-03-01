@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { parseM3U, Channel } from '@/lib/m3uParser';
 import { presetPlaylists, PresetPlaylist } from '@/lib/presetPlaylists';
+import { cn } from '@/lib/utils';
 import {
   getConsent,
   setConsent,
@@ -15,6 +16,14 @@ import {
   getAutoPlay,
   setAutoPlay as saveAutoPlay,
 } from '@/lib/storage';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import {
+  Sun, Moon, Keyboard, Menu, ListPlus, ChevronLeft, ChevronRight, Star,
+  Search, X, Loader2, Play, Pause
+} from 'lucide-react';
 import ConsentModal from './components/ConsentModal';
 import UploadZone from './components/UploadZone';
 import VideoPlayer from './components/VideoPlayer';
@@ -240,13 +249,13 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-gray-950">
+      <div className="flex h-screen flex-col items-center justify-center bg-background">
         <img
           src={LOGO_URL}
           alt="FalconStream Pro - Loading"
           className="mb-4 h-16 w-16 rounded-xl object-contain animate-pulse"
         />
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -265,41 +274,43 @@ export default function Home() {
 
     return (
       <div className={theme}>
-        <div className="flex min-h-screen flex-col bg-white dark:bg-gray-950">
+        <div className="flex min-h-screen flex-col bg-background">
           {/* Sticky Header with scroll effect */}
-          <div className={`sticky top-0 z-10 flex w-full items-center justify-between border-b px-4 py-3 transition-all ${
+          <header className={cn(
+            "sticky top-0 z-10 flex w-full items-center justify-between border-b px-4 py-3 transition-all",
             headerScrolled
-              ? 'border-gray-200 bg-white/95 shadow-sm backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/95'
-              : 'border-transparent bg-white/80 backdrop-blur-md dark:bg-gray-950/80'
-          }`}>
-            <h1 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white sm:text-xl">
+              ? 'border-border bg-background/95 shadow-sm backdrop-blur-md'
+              : 'border-transparent bg-background/80 backdrop-blur-md'
+          )}>
+            <h1 className="flex items-center gap-2 text-lg font-bold text-foreground sm:text-xl">
               <img src={LOGO_URL} alt="FalconStream Pro" className="h-8 w-8 rounded-lg object-contain" />
-              FalconStream Pro
+              <span className="hidden xs:inline">FalconStream Pro</span>
             </h1>
-            <div className="flex items-center gap-2">
-              <button
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Button
                 onClick={() => setShowShortcuts(true)}
-                className="hidden rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 sm:block"
+                variant="ghost"
+                size="icon"
+                className="hidden sm:flex"
                 aria-label="Keyboard shortcuts"
                 title="Keyboard shortcuts (?)"
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                </svg>
-              </button>
-              <button
+                <Keyboard className="h-4 w-4" />
+              </Button>
+              <Button
                 onClick={handleThemeToggle}
-                className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                variant="ghost"
+                size="icon"
                 aria-label="Toggle theme"
               >
-                {theme === 'dark' ? '☀️' : '🌙'}
-              </button>
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
             </div>
-          </div>
+          </header>
 
           <div className="w-full max-w-6xl mx-auto px-4 py-6 animate-fade-in">
             <div className="mb-6 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Browse {presetPlaylists.length} preset channel collections from around the world, or upload your own M3U playlist
               </p>
             </div>
@@ -312,36 +323,35 @@ export default function Home() {
             />
 
             {/* Region filter + Search */}
-            <div className="mb-6 flex flex-col items-center gap-3 sm:flex-row">
-              <div className="relative flex-1 sm:max-w-xs">
-                <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
+            <div className="mb-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+              <div className="relative w-full sm:max-w-xs">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
                   type="text"
                   value={presetSearch}
                   onChange={(e) => setPresetSearch(e.target.value)}
                   placeholder="Search countries & categories..."
-                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                  className="pl-10 pr-9"
                 />
                 {presetSearch && (
                   <button
                     onClick={() => setPresetSearch('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     aria-label="Clear search"
                   >
-                    ✕
+                    <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 <button
                   onClick={() => setPresetRegionFilter('')}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                     presetRegionFilter === ''
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
-                  }`}
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                  )}
                 >
                   All
                 </button>
@@ -349,11 +359,12 @@ export default function Home() {
                   <button
                     key={region}
                     onClick={() => setPresetRegionFilter(region === presetRegionFilter ? '' : region)}
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                       presetRegionFilter === region
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
-                    }`}
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    )}
                   >
                     {region}
                   </button>
@@ -370,8 +381,8 @@ export default function Home() {
               <div className="mb-8">
                 {filteredPresets.length === 0 ? (
                   <div className="flex flex-col items-center py-12 text-center">
-                    <span className="mb-2 text-4xl">🔍</span>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <Search className="mb-2 h-10 w-10 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">
                       No playlists match your search.
                     </p>
                   </div>
@@ -384,21 +395,25 @@ export default function Home() {
                         disabled={loadingPreset !== null}
                         aria-label={`Load ${preset.name}`}
                         aria-busy={loadingPreset === preset.id}
-                        className="group flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-4 text-center transition-all hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500"
+                        className={cn(
+                          "group flex flex-col items-center gap-2 rounded-xl border p-3 text-center transition-all sm:p-4",
+                          "border-border bg-card hover:border-primary/50 hover:shadow-lg hover:-translate-y-0.5",
+                          "disabled:opacity-50 disabled:hover:translate-y-0"
+                        )}
                       >
-                        <span className="text-3xl transition-transform group-hover:scale-110">{preset.icon}</span>
+                        <span className="text-2xl transition-transform group-hover:scale-110 sm:text-3xl">{preset.icon}</span>
                         <div className="min-w-0 w-full">
-                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                          <p className="truncate text-sm font-semibold text-card-foreground">
                             {preset.name}
                           </p>
                           {preset.region && (
-                            <p className="truncate text-xs text-gray-400 dark:text-gray-500">
+                            <p className="truncate text-xs text-muted-foreground">
                               {preset.region}
                             </p>
                           )}
                         </div>
                         {loadingPreset === preset.id && (
-                          <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                          <Loader2 className="h-5 w-5 shrink-0 animate-spin text-primary" />
                         )}
                       </button>
                     ))}
@@ -420,24 +435,24 @@ export default function Home() {
             )}
 
             <div className="mb-6 flex w-full items-center gap-3">
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
-              <span className="text-xs text-gray-400 dark:text-gray-500">or upload your own</span>
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+              <Separator className="flex-1" />
+              <span className="whitespace-nowrap text-xs text-muted-foreground">or upload your own</span>
+              <Separator className="flex-1" />
             </div>
 
             <UploadZone onFileLoaded={handleFileLoaded} onUrlLoaded={handleFileLoaded} />
           </div>
 
           {/* Enhanced Footer */}
-          <footer className="mt-auto w-full border-t border-gray-200 px-4 py-6 dark:border-gray-800">
-            <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center text-xs text-gray-400 dark:text-gray-500">
+          <footer className="mt-auto w-full border-t border-border px-4 py-6">
+            <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <img src={LOGO_URL} alt="" className="h-5 w-5 rounded object-contain opacity-50" />
-                <span className="font-medium">FalconStream Pro</span>
+                <span className="font-medium text-foreground/70">FalconStream Pro</span>
               </div>
               <p>{presetPlaylists.length} preset collections • Open source M3U/HLS player • Dark mode • Favorites • Picture-in-Picture</p>
-              <div className="flex items-center gap-4">
-                <span>Press <kbd className="rounded border border-gray-300 px-1 py-0.5 font-mono text-xs dark:border-gray-600">?</kbd> for keyboard shortcuts</span>
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+                <span>Press <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">?</kbd> for shortcuts</span>
                 <span className="hidden sm:inline">•</span>
                 <span className="hidden sm:inline">Built with Next.js &amp; HLS.js</span>
               </div>
@@ -455,74 +470,81 @@ export default function Home() {
   // Player state - channels loaded
   return (
     <div className={theme}>
-      <div className="flex h-screen flex-col bg-white dark:bg-gray-950">
+      <div className="flex h-screen flex-col bg-background">
         {/* Top Bar */}
-        <header className="flex items-center justify-between border-b border-gray-200 px-3 py-2 dark:border-gray-800">
+        <header className="flex items-center justify-between border-b border-border px-3 py-2">
           <div className="flex items-center gap-2">
             {/* Mobile menu toggle */}
-            <button
+            <Button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
               aria-label="Toggle channel list"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <h1 className="flex items-center gap-2 text-base font-bold text-gray-900 dark:text-white sm:text-lg">
+              <Menu className="h-5 w-5" />
+            </Button>
+            <h1 className="flex items-center gap-2 text-base font-bold text-foreground sm:text-lg">
               <img src={LOGO_URL} alt="FalconStream Pro" className="h-7 w-7 rounded object-contain" />
               <span className="hidden sm:inline">FalconStream Pro</span>
             </h1>
-            <span className="hidden text-xs text-gray-400 dark:text-gray-500 sm:inline">
+            <Badge variant="secondary" className="hidden sm:inline-flex">
               {channels.length} channels
-            </span>
+            </Badge>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Auto-play toggle */}
-            <button
+            <Button
               onClick={handleAutoPlayToggle}
-              className={`rounded-lg px-2 py-1.5 text-xs transition-colors sm:px-3 sm:text-sm ${
-                autoPlay
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                  : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
-              }`}
+              variant={autoPlay ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "text-xs sm:text-sm",
+                autoPlay && "bg-primary/20 text-primary hover:bg-primary/30"
+              )}
               title={autoPlay ? 'Auto-play is ON' : 'Auto-play is OFF'}
               aria-label="Toggle auto-play next channel"
             >
-              {autoPlay ? '▶ Auto' : '⏸ Auto'}
-            </button>
-            <button
+              {autoPlay ? <Play className="mr-1 h-3 w-3" /> : <Pause className="mr-1 h-3 w-3" />}
+              <span className="hidden sm:inline">Auto</span>
+            </Button>
+            <Button
               onClick={handleReset}
-              className="rounded-lg px-2 py-1.5 text-xs text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 sm:px-3 sm:text-sm"
+              variant="ghost"
+              size="sm"
+              className="text-xs sm:text-sm"
             >
-              New Playlist
-            </button>
-            <button
+              <ListPlus className="mr-1 h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">New Playlist</span>
+            </Button>
+            <Button
               onClick={() => setShowShortcuts(true)}
-              className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+              variant="ghost"
+              size="icon"
+              className="hidden sm:flex"
               aria-label="Keyboard shortcuts"
               title="Keyboard shortcuts (?)"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-              </svg>
-            </button>
-            <button
+              <Keyboard className="h-4 w-4" />
+            </Button>
+            <Button
               onClick={handleThemeToggle}
-              className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+              variant="ghost"
+              size="icon"
               aria-label="Toggle theme"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
           </div>
         </header>
 
         <div className="relative flex flex-1 overflow-hidden">
           {/* Sidebar - Channel List */}
           <aside
-            className={`absolute inset-y-0 left-0 z-30 w-72 transform border-r border-gray-200 bg-white transition-transform duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-950 sm:w-80 lg:relative lg:z-auto lg:translate-x-0 ${
+            className={cn(
+              "absolute inset-y-0 left-0 z-30 w-72 transform border-r border-border bg-background transition-transform duration-300 ease-in-out sm:w-80 lg:relative lg:z-auto lg:translate-x-0",
               sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}
+            )}
           >
             <ChannelList
               channels={channels}
@@ -545,83 +567,93 @@ export default function Home() {
           {/* Main Content - Player */}
           <main className="flex flex-1 flex-col items-center justify-center overflow-y-auto p-3 sm:p-6">
             {activeChannel ? (
-              <div className="w-full max-w-4xl">
+              <div className="w-full max-w-4xl animate-fade-in">
                 <VideoPlayer
                   url={activeChannel.url}
                   channelName={activeChannel.name}
                   onStreamEnded={handleStreamEnded}
                 />
-                <div className="mt-4 flex items-start justify-between gap-4">
+                <div className="mt-4 flex items-start justify-between gap-3 sm:gap-4">
                   <div className="min-w-0 flex-1">
-                    <h2 className="truncate text-lg font-semibold text-gray-900 dark:text-white">
+                    <h2 className="truncate text-base font-semibold text-foreground sm:text-lg">
                       {activeChannel.name}
                     </h2>
                     {activeChannel.group && activeChannel.group !== 'Uncategorized' && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <Badge variant="secondary" className="mt-1">
                         {activeChannel.group}
-                      </p>
+                      </Badge>
                     )}
                     {autoPlay && (
-                      <p className="mt-1 text-xs text-blue-500 dark:text-blue-400">
-                        ▶ Auto-play next channel is enabled
+                      <p className="mt-1 flex items-center gap-1 text-xs text-primary">
+                        <Play className="h-3 w-3" />
+                        Auto-play next channel is enabled
                       </p>
                     )}
                   </div>
-                  <div className="flex shrink-0 items-center gap-1">
+                  <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
                     {/* Previous channel button */}
                     {(() => {
                       const idx = channels.findIndex((ch) => ch.id === activeChannel.id);
                       return (
                         <>
-                          <button
+                          <Button
                             onClick={() => {
                               if (idx > 0) handleChannelSelect(channels[idx - 1]);
                             }}
                             disabled={idx <= 0}
-                            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9"
                             aria-label="Previous channel"
                             title="Previous channel (↑)"
                           >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                            </svg>
-                          </button>
+                            <ChevronLeft className="h-5 w-5" />
+                          </Button>
                           {/* Next channel button */}
-                          <button
+                          <Button
                             onClick={() => {
                               if (idx < channels.length - 1) handleChannelSelect(channels[idx + 1]);
                             }}
                             disabled={idx >= channels.length - 1}
-                            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9"
                             aria-label="Next channel"
                             title="Next channel (↓)"
                           >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                          </button>
+                            <ChevronRight className="h-5 w-5" />
+                          </Button>
                         </>
                       );
                     })()}
                     {/* Favorite button */}
-                    <button
+                    <Button
                       onClick={() => handleToggleFavorite(activeChannel.id)}
-                      className="shrink-0 rounded-lg p-2 text-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9"
                       aria-label={
                         favorites.includes(activeChannel.id)
                           ? 'Remove from favorites'
                           : 'Add to favorites'
                       }
                     >
-                      {favorites.includes(activeChannel.id) ? '⭐' : '☆'}
-                    </button>
+                      {favorites.includes(activeChannel.id) ? (
+                        <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+                      ) : (
+                        <Star className="h-5 w-5" />
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-500 dark:text-gray-400">
-                Select a channel to start watching
-              </p>
+              <div className="flex flex-col items-center gap-3 text-center">
+                <Play className="h-12 w-12 text-muted-foreground/30" />
+                <p className="text-muted-foreground">
+                  Select a channel to start watching
+                </p>
+              </div>
             )}
           </main>
         </div>
