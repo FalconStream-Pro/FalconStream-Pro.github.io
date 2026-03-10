@@ -3,16 +3,18 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import Hls from 'hls.js';
 import { getVolume, setVolume as saveVolume } from '@/lib/storage';
+import { buildProxiedUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Maximize, Minimize, PictureInPicture2, Loader2, Satellite } from 'lucide-react';
+import { Maximize, Minimize, PictureInPicture2, Loader2, Satellite, ShieldCheck } from 'lucide-react';
 
 interface VideoPlayerProps {
   url: string;
   channelName: string;
   onStreamEnded?: () => void;
+  proxyUrl?: string;
 }
 
-export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPlayerProps) {
+export default function VideoPlayer({ url, channelName, onStreamEnded, proxyUrl }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -37,11 +39,22 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
 
     destroyHls();
 
+    // Build the effective URL, routing through proxy when configured
+    const buildUrl = (rawUrl: string) => buildProxiedUrl(rawUrl, proxyUrl);
+
     if (url.includes('.m3u8') || url.includes('.m3u')) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           enableWorker: true,
           lowLatencyMode: true,
+          // Route every XHR request (manifest + segments) through the proxy
+          ...(proxyUrl
+            ? {
+                xhrSetup: (xhr: XMLHttpRequest, segUrl: string) => {
+                  xhr.open('GET', buildUrl(segUrl), true);
+                },
+              }
+            : {}),
         });
         hlsRef.current = hls;
         hls.loadSource(url);
@@ -68,7 +81,7 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
           }
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
+        video.src = buildUrl(url);
         video.addEventListener('loadedmetadata', () => {
           setLoading(false);
           video.play().catch(() => {});
@@ -78,7 +91,7 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
         setLoading(false);
       }
     } else {
-      video.src = url;
+      video.src = buildUrl(url);
       video.addEventListener('loadeddata', () => {
         setLoading(false);
         video.play().catch(() => {});
@@ -92,7 +105,7 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
     return () => {
       destroyHls();
     };
-  }, [url, destroyHls]);
+  }, [url, proxyUrl, destroyHls]);
 
   const handleVolumeChange = () => {
     if (videoRef.current) {
@@ -169,6 +182,15 @@ export default function VideoPlayer({ url, channelName, onStreamEnded }: VideoPl
       />
 
       <div className="flex items-center justify-end gap-1 bg-gray-900/95 px-2 py-1 sm:px-3 sm:py-1.5 sm:gap-2">
+        {proxyUrl && (
+          <span
+            className="mr-auto flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-green-400"
+            title="Proxy active – requests routed through CORS proxy"
+          >
+            <ShieldCheck className="h-3 w-3" />
+            Proxy
+          </span>
+        )}
         <Button
           onClick={handleFullscreen}
           variant="ghost"
