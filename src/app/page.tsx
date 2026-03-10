@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { parseM3U, Channel } from '@/lib/m3uParser';
 import { presetPlaylists, PresetPlaylist } from '@/lib/presetPlaylists';
-import { cn } from '@/lib/utils';
+import { cn, buildProxiedUrl } from '@/lib/utils';
 import {
   getConsent,
   setConsent,
@@ -15,6 +15,10 @@ import {
   setTheme as saveTheme,
   getAutoPlay,
   setAutoPlay as saveAutoPlay,
+  getProxyEnabled,
+  setProxyEnabled as saveProxyEnabled,
+  getProxyUrl,
+  setProxyUrl as saveProxyUrl,
 } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import {
   Sun, Moon, Keyboard, Menu, ListPlus, ChevronLeft, ChevronRight, Star,
-  Search, X, Loader2, Play, Pause
+  Search, X, Loader2, Play, Pause, Shield, ShieldCheck
 } from 'lucide-react';
 import ConsentModal from './components/ConsentModal';
 import UploadZone from './components/UploadZone';
@@ -33,6 +37,7 @@ import ToastContainer, { showToast } from './components/Toast';
 import HeroSection from './components/HeroSection';
 import CategoryRow from './components/CategoryRow';
 import ScrollToTop from './components/ScrollToTop';
+import ProxySettings from './components/ProxySettings';
 
 const LOGO_URL =
   'https://res.cloudinary.com/dkj22lm1g/image/upload/v1771081619/FalconStream-Pro_jqpcgb.webp';
@@ -53,6 +58,9 @@ export default function Home() {
   const [presetRegionFilter, setPresetRegionFilter] = useState('');
   const [presetSearch, setPresetSearch] = useState('');
   const [headerScrolled, setHeaderScrolled] = useState(false);
+  const [proxyEnabled, setProxyEnabledState] = useState(false);
+  const [proxyUrl, setProxyUrlState] = useState('');
+  const [showProxySettings, setShowProxySettings] = useState(false);
 
   // Track header opacity on scroll
   useEffect(() => {
@@ -103,6 +111,8 @@ export default function Home() {
     const t = getTheme();
     setThemeState(t);
     document.documentElement.classList.toggle('dark', t === 'dark');
+    setProxyEnabledState(getProxyEnabled());
+    setProxyUrlState(getProxyUrl());
   }, []);
 
   const handleConsent = () => {
@@ -153,6 +163,14 @@ export default function Home() {
     saveAutoPlay(next);
   };
 
+  const handleProxySave = useCallback((enabled: boolean, url: string) => {
+    setProxyEnabledState(enabled);
+    setProxyUrlState(url);
+    saveProxyEnabled(enabled);
+    saveProxyUrl(url);
+    showToast(enabled ? 'Proxy enabled' : 'Proxy disabled', 'success');
+  }, []);
+
   // Auto-play next channel on stream end
   const handleStreamEnded = useCallback(() => {
     if (!autoPlay || !activeChannel || !channels.length) return;
@@ -170,7 +188,8 @@ export default function Home() {
     setPresetError('');
     showToast(`Loading ${preset.name}...`, 'info');
     try {
-      const res = await fetch(preset.url);
+      const targetUrl = buildProxiedUrl(preset.url, proxyEnabled && proxyUrl ? proxyUrl : undefined);
+      const res = await fetch(targetUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       const parsed = parseM3U(text);
@@ -191,7 +210,7 @@ export default function Home() {
     } finally {
       setLoadingPreset(null);
     }
-  }, []);
+  }, [proxyEnabled, proxyUrl]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -287,6 +306,16 @@ export default function Home() {
               <span className="hidden sm:inline">FalconStream Pro</span>
             </h1>
             <div className="flex items-center gap-1 sm:gap-2">
+              <Button
+                onClick={() => setShowProxySettings(true)}
+                variant={proxyEnabled ? 'default' : 'ghost'}
+                size="icon"
+                aria-label="Proxy settings"
+                title={proxyEnabled ? 'Proxy enabled – click to configure' : 'Configure CORS proxy'}
+                className={proxyEnabled ? 'bg-green-600/20 text-green-500 hover:bg-green-600/30 hover:text-green-400' : ''}
+              >
+                {proxyEnabled ? <ShieldCheck className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
+              </Button>
               <Button
                 onClick={() => setShowShortcuts(true)}
                 variant="ghost"
@@ -440,7 +469,7 @@ export default function Home() {
               <Separator className="flex-1" />
             </div>
 
-            <UploadZone onFileLoaded={handleFileLoaded} onUrlLoaded={handleFileLoaded} />
+            <UploadZone onFileLoaded={handleFileLoaded} onUrlLoaded={handleFileLoaded} proxyUrl={proxyEnabled ? proxyUrl : undefined} />
           </div>
 
           {/* Enhanced Footer */}
@@ -463,6 +492,13 @@ export default function Home() {
         <ToastContainer />
         <ScrollToTop />
         {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
+        <ProxySettings
+          open={showProxySettings}
+          onClose={() => setShowProxySettings(false)}
+          proxyEnabled={proxyEnabled}
+          proxyUrl={proxyUrl}
+          onSave={handleProxySave}
+        />
       </div>
     );
   }
@@ -516,6 +552,16 @@ export default function Home() {
             >
               <ListPlus className="mr-1 h-4 w-4 sm:mr-1.5" />
               <span className="hidden sm:inline">New Playlist</span>
+            </Button>
+            <Button
+              onClick={() => setShowProxySettings(true)}
+              variant={proxyEnabled ? 'default' : 'ghost'}
+              size="icon"
+              aria-label="Proxy settings"
+              title={proxyEnabled ? 'Proxy enabled – click to configure' : 'Configure CORS proxy'}
+              className={proxyEnabled ? 'bg-green-600/20 text-green-500 hover:bg-green-600/30 hover:text-green-400' : ''}
+            >
+              {proxyEnabled ? <ShieldCheck className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
             </Button>
             <Button
               onClick={() => setShowShortcuts(true)}
@@ -572,6 +618,7 @@ export default function Home() {
                   url={activeChannel.url}
                   channelName={activeChannel.name}
                   onStreamEnded={handleStreamEnded}
+                  proxyUrl={proxyEnabled && proxyUrl ? proxyUrl : undefined}
                 />
                 <div className="mt-4 flex items-start justify-between gap-3 sm:gap-4">
                   <div className="min-w-0 flex-1">
@@ -661,6 +708,13 @@ export default function Home() {
 
       <ToastContainer />
       {showShortcuts && <KeyboardShortcutsPanel onClose={() => setShowShortcuts(false)} />}
+      <ProxySettings
+        open={showProxySettings}
+        onClose={() => setShowProxySettings(false)}
+        proxyEnabled={proxyEnabled}
+        proxyUrl={proxyUrl}
+        onSave={handleProxySave}
+      />
     </div>
   );
 }

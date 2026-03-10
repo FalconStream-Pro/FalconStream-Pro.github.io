@@ -98,3 +98,26 @@ export function setAutoPlay(value: boolean): void {
   if (!isBrowser()) return;
   localStorage.setItem(AUTOPLAY_KEY, String(value));
 }
+
+const PROXY_ENABLED_KEY = 'falconstream-proxy-enabled';
+const PROXY_URL_KEY = 'falconstream-proxy-url';
+
+export function getProxyEnabled(): boolean {
+  if (!isBrowser()) return false;
+  return localStorage.getItem(PROXY_ENABLED_KEY) === 'true';
+}
+
+export function setProxyEnabled(value: boolean): void {
+  if (!isBrowser()) return;
+  localStorage.setItem(PROXY_ENABLED_KEY, String(value));
+}
+
+export function getProxyUrl(): string {
+  if (!isBrowser()) return '';
+  return localStorage.getItem(PROXY_URL_KEY) || '';
+}
+
+export function setProxyUrl(url: string): void {
+  if (!isBrowser()) return;
+  localStorage.setItem(PROXY_URL_KEY, url);
+}

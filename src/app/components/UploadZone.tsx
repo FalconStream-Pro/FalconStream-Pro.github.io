@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Upload, Loader2, Link, AlertCircle } from 'lucide-react';
+import { buildProxiedUrl } from '@/lib/utils';
 
 interface UploadZoneProps {
   onFileLoaded: (content: string) => void;
   onUrlLoaded: (content: string) => void;
+  proxyUrl?: string;
 }
 
-export default function UploadZone({ onFileLoaded, onUrlLoaded }: UploadZoneProps) {
+export default function UploadZone({ onFileLoaded, onUrlLoaded, proxyUrl }: UploadZoneProps) {
   const [dragging, setDragging] = useState(false);
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +57,8 @@ export default function UploadZone({ onFileLoaded, onUrlLoaded }: UploadZoneProp
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(url.trim());
+      const targetUrl = buildProxiedUrl(url.trim(), proxyUrl);
+      const res = await fetch(targetUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       onUrlLoaded(text);
