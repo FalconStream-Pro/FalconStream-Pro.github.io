@@ -42,7 +42,11 @@ export default function VideoPlayer({ url, channelName, onStreamEnded, proxyUrl 
     // Build the effective URL, routing through proxy when configured
     const buildUrl = (rawUrl: string) => buildProxiedUrl(rawUrl, proxyUrl);
 
-    if (url.includes('.m3u8') || url.includes('.m3u')) {
+    // Live streams are HLS even when the URL has no .m3u8 extension
+    // (e.g. https://teledrama.ebc.lk/TTT/proxy.php), so only plain media
+    // files bypass hls.js.
+    const isProgressive = /\.(mp4|webm|ogv|ogg|mp3|m4a|aac|wav)(\?|#|$)/i.test(url);
+    if (!isProgressive) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           enableWorker: true,
