@@ -28,17 +28,6 @@ jobs:
       - name: Probe guessed stream URLs
         run: python3 scripts/check_streams.py public/playlists/sri-lanka/sources/probe.m3u
 
-      - name: Look for streams on official channel pages
-        run: >-
-          python3 scripts/find_streams.py
-          https://live.sirasatv.lk/
-          https://www.sirasatv.lk/
-          https://www.newsfirst.lk/live/
-          https://www.yupptv.com/channels/sirasa-tv/live
-          https://tvivu.com/watch/sirasa-tv
-          https://livetvcentral.com/tv/sirasa-tv
-          https://www.peomobile.com/live/live-sirasa-tv
-
       - name: Upload working playlist
         uses: actions/upload-artifact@v4
         with:

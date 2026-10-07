@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { Shield, ShieldCheck, ShieldOff, X, ExternalLink } from 'lucide-react';
+import { Shield, ShieldCheck, ShieldOff, ExternalLink } from 'lucide-react';
 
 export const PRESET_PROXIES = [
   {
@@ -49,6 +49,15 @@ export default function ProxySettings({
     return isPreset ? '' : proxyUrl;
   });
 
+  // Start from the saved settings each time the dialog opens
+  useEffect(() => {
+    if (!open) return;
+    setEnabled(proxyEnabled);
+    const isPreset = PRESET_PROXIES.some((p) => p.value && p.value === proxyUrl);
+    setSelectedPreset(isPreset ? proxyUrl : '');
+    setCustomUrl(isPreset ? '' : proxyUrl);
+  }, [open, proxyEnabled, proxyUrl]);
+
   const effectiveUrl = selectedPreset || customUrl.trim();
 
   const handleSave = () => {
@@ -58,19 +67,12 @@ export default function ProxySettings({
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent className="max-w-md rounded-2xl border border-border bg-background p-0 shadow-xl sm:rounded-2xl">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md gap-0 rounded-3xl border border-border bg-card p-0 shadow-2xl sm:rounded-3xl">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Shield className="h-4 w-4 text-primary" />
-            <DialogTitle className="text-sm font-semibold">CORS Proxy Settings</DialogTitle>
+            <DialogTitle className="text-base font-semibold">Stream proxy</DialogTitle>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded p-1 text-muted-foreground hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
 
         <div className="space-y-5 px-5 py-4">

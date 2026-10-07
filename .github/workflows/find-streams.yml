@@ -1,0 +1,51 @@
+name: Find streams
+
+# Exploratory: looks for stream URLs on channel websites and diagnoses
+# streams that pass the stream check but fail in the browser.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/sniff_streams.cjs'
+      - 'scripts/diagnose_stream.py'
+      - 'scripts/find_streams.py'
+      - '.github/workflows/find-streams.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  find:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Diagnose streams that fail in the browser
+        run: python3 scripts/diagnose_stream.py https://teledrama.ebc.lk/TTT/proxy.php
+
+      - name: Scan channel pages for stream links
+        run: >-
+          python3 scripts/find_streams.py
+          https://live.sirasatv.lk/
+          https://www.newsfirst.lk/live/
+          https://tvivu.com/watch/sirasa-tv
+          https://livetvcentral.com/tv/sirasa-tv
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Record stream requests made by channel pages
+        env:
+          BROWSER_CHANNEL: chrome
+        run: >-
+          node scripts/sniff_streams.cjs
+          https://live.sirasatv.lk/
+          https://www.newsfirst.lk/live/
+          https://tvivu.com/watch/sirasa-tv
+          https://livetvcentral.com/tv/sirasa-tv
+          https://www.peomobile.com/live/live-sirasa-tv
+          https://www.yupptv.com/channels/sirasa-tv/live
+          https://lakfreedom.info/local-tv-channels/136-sirasa-tv-live
+          https://online-television.net/3880-sirasa-tv.html

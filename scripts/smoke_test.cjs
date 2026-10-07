@@ -94,7 +94,7 @@ async function main() {
       }
       let detail = '';
       if (!ok) {
-        const errorText = await page.locator('.text-red-400').first()
+        const errorText = await page.locator('[data-player-error] p').last()
           .innerText({ timeout: 1000 }).catch(() => '');
         const state = await page.evaluate(() => {
           const v = document.querySelector('video');

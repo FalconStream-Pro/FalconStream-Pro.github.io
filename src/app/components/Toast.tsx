@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { cn } from '@/lib/utils';
 import { CheckCircle2, XCircle, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface ToastMessage {
   id: string;
@@ -17,20 +17,19 @@ export function showToast(text: string, type: ToastMessage['type'] = 'info') {
   toastListeners.forEach((fn) => fn(msg));
 }
 
-const icons = {
-  success: CheckCircle2,
-  error: XCircle,
-  info: Info,
+const icons = { success: CheckCircle2, error: XCircle, info: Info };
+const colors = {
+  success: 'text-emerald-500',
+  error: 'text-red-500',
+  info: 'text-primary',
 };
 
 export default function ToastContainer() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = useCallback((msg: ToastMessage) => {
-    setToasts((prev) => [...prev.slice(-4), msg]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== msg.id));
-    }, 3000);
+    setToasts((prev) => [...prev.slice(-2), msg]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== msg.id)), 3200);
   }, []);
 
   useEffect(() => {
@@ -40,23 +39,20 @@ export default function ToastContainer() {
     };
   }, [addToast]);
 
-  if (toasts.length === 0) return null;
-
   return (
-    <div className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2">
+    <div
+      aria-live="polite"
+      className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-[80] flex flex-col items-center gap-2 px-4 sm:items-end sm:px-6"
+    >
       {toasts.map((toast) => {
         const Icon = icons[toast.type];
         return (
           <div
             key={toast.id}
-            className={cn(
-              "animate-slide-up flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium shadow-lg backdrop-blur-md",
-              toast.type === 'success' && 'bg-green-600/90 text-white',
-              toast.type === 'error' && 'bg-red-600/90 text-white',
-              toast.type === 'info' && 'bg-gray-800/90 text-white dark:bg-gray-700/90'
-            )}
+            role={toast.type === 'error' ? 'alert' : 'status'}
+            className="pointer-events-auto flex max-w-sm animate-in fade-in-0 slide-in-from-bottom-2 items-center gap-2.5 rounded-2xl border border-border bg-card/95 px-4 py-3 text-sm font-medium text-foreground shadow-xl backdrop-blur"
           >
-            <Icon className="h-4 w-4 shrink-0" />
+            <Icon className={cn('h-4 w-4 shrink-0', colors[toast.type])} />
             {toast.text}
           </div>
         );
