@@ -63,7 +63,8 @@ export const presetPlaylists: PresetPlaylist[] = [
     name: 'Sri Lanka',
     description: 'TV channels from Sri Lanka',
     icon: '🇱🇰',
-    url: 'https://iptv-org.github.io/iptv/countries/lk.m3u',
+    // Self-hosted copy, checked by .github/workflows/check-streams.yml
+    url: '/playlists/sri-lanka/lk.m3u',
     region: 'Asia',
   },
   {
