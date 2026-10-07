@@ -188,7 +188,11 @@ export default function Home() {
     setPresetError('');
     showToast(`Loading ${preset.name}...`, 'info');
     try {
-      const targetUrl = buildProxiedUrl(preset.url, proxyEnabled && proxyUrl ? proxyUrl : undefined);
+      // Playlists hosted on this site are same-origin and never need the proxy
+      const isLocal = preset.url.startsWith('/');
+      const targetUrl = isLocal
+        ? preset.url
+        : buildProxiedUrl(preset.url, proxyEnabled && proxyUrl ? proxyUrl : undefined);
       const res = await fetch(targetUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
