@@ -13,6 +13,9 @@ const { chromium } = require('playwright');
 const base = process.argv[2].replace(/\/$/, '');
 const play = process.argv.includes('--play');
 const executablePath = process.env.CHROMIUM_PATH || undefined;
+// Playwright's bundled Chromium has no H.264/AAC decoders, which every live
+// stream here uses; CI sets BROWSER_CHANNEL=chrome to test in Google Chrome.
+const channel = process.env.BROWSER_CHANNEL || undefined;
 
 const summary = [];
 let failed = false;
@@ -26,6 +29,7 @@ const log = (ok, msg) => {
 async function main() {
   const browser = await chromium.launch({
     executablePath,
+    channel,
     args: ['--autoplay-policy=no-user-gesture-required'],
   });
   const page = await browser.newPage();
@@ -65,6 +69,10 @@ async function main() {
   log(count > 0, `Sri Lanka preset loaded ${count} channels`);
 
   if (play && count > 0) {
+    const h264 = await page.evaluate(() =>
+      MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"'),
+    );
+    log(h264, `Test browser can decode H.264/AAC${h264 ? '' : ' (set BROWSER_CHANNEL=chrome)'}`);
     let playing = 0;
     for (let i = 0; i < count; i++) {
       const option = options.nth(i);
@@ -84,8 +92,18 @@ async function main() {
       } catch {
         // reported below
       }
-      const errorText = ok ? '' : await page.locator('.text-red-400').first().innerText().catch(() => '');
-      log(ok, `Plays: ${name}${errorText ? ` (${errorText})` : ''}`);
+      let detail = '';
+      if (!ok) {
+        const errorText = await page.locator('.text-red-400').first()
+          .innerText({ timeout: 1000 }).catch(() => '');
+        const state = await page.evaluate(() => {
+          const v = document.querySelector('video');
+          return v ? `readyState=${v.readyState} currentTime=${v.currentTime.toFixed(1)}` +
+            `${v.error ? ` mediaError=${v.error.code}` : ''}` : 'no <video>';
+        });
+        detail = ` (${errorText ? `${errorText}; ` : ''}${state})`;
+      }
+      log(ok, `Plays: ${name}${detail}`);
       if (ok) playing++;
       // Pause between channels so streams are not all opened at once
       await page.waitForTimeout(500);

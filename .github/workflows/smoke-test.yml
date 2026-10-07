@@ -36,3 +36,5 @@ jobs:
           python3 -m http.server 8080 --directory out &
           sleep 2
           node scripts/smoke_test.cjs http://localhost:8080 --play
+        env:
+          BROWSER_CHANNEL: chrome

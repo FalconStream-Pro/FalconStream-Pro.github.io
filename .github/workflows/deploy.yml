@@ -60,3 +60,5 @@ jobs:
 
       - name: Smoke test the live site
         run: node scripts/smoke_test.cjs https://falconstream-pro.github.io --play
+        env:
+          BROWSER_CHANNEL: chrome
