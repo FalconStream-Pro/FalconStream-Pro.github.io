@@ -22,8 +22,13 @@ jobs:
       - name: Check streams
         run: python3 scripts/check_streams.py public/playlists/sri-lanka/lk.m3u --write-working working-lk.m3u
 
+      - name: Check all known candidate streams
+        run: python3 scripts/check_streams.py public/playlists/sri-lanka/sources/candidates.m3u --write-working working-candidates.m3u
+
       - name: Upload working playlist
         uses: actions/upload-artifact@v4
         with:
           name: working-lk-m3u
-          path: working-lk.m3u
+          path: |
+            working-lk.m3u
+            working-candidates.m3u

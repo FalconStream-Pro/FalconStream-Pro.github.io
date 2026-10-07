@@ -1,0 +1,40 @@
+name: Smoke test
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke test the build, playing every Sri Lanka channel
+        run: |
+          python3 -m http.server 8080 --directory out &
+          sleep 2
+          node scripts/smoke_test.cjs http://localhost:8080 --play
+        env:
+          BROWSER_CHANNEL: chrome

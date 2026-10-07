@@ -46,3 +46,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Smoke test the live site
+        run: node scripts/smoke_test.cjs https://falconstream-pro.github.io --play
+        env:
+          BROWSER_CHANNEL: chrome
