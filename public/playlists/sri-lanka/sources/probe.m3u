@@ -1,0 +1,15 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="SirasaTV.lk" group-title="Sirasa TV",Sirasa TV (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/SirasaTV/index.m3u8
+#EXTINF:-1 tvg-id="SirasaTV.lk" group-title="Sirasa TV",Sirasa TV (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/Sirasa/index.m3u8
+#EXTINF:-1 tvg-id="SirasaTV.lk" group-title="Sirasa TV",Sirasa TV (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/SirasaTv/index.m3u8
+#EXTINF:-1 tvg-id="SirasaTV.lk" group-title="Sirasa TV",Sirasa TV (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/sirasatv/index.m3u8
+#EXTINF:-1 tvg-id="TV1.lk" group-title="TV 1",TV 1 (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/TV1/index.m3u8
+#EXTINF:-1 tvg-id="TV1.lk" group-title="TV 1",TV 1 (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/TVOne/index.m3u8
+#EXTINF:-1 tvg-id="News1st.lk" group-title="News1st",News1st (smartplaytv guess)
+https://mumbai-edge.smartplaytv.in/News1st/index.m3u8
