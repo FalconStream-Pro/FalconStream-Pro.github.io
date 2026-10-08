@@ -33,6 +33,17 @@ async function main() {
     args: ['--autoplay-policy=no-user-gesture-required'],
   });
   const page = await browser.newPage();
+  // Third-party request problems, reported for channels that do not play
+  let streamIssues = [];
+  page.on('requestfailed', (req) => {
+    if (!req.url().startsWith(base)) streamIssues.push(`${req.failure()?.errorText} ${req.url().slice(0, 100)}`);
+  });
+  page.on('response', (res) => {
+    if (!res.url().startsWith(base) && res.status() >= 400) streamIssues.push(`HTTP ${res.status()} ${res.url().slice(0, 100)}`);
+  });
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') streamIssues.push(`console: ${msg.text().slice(0, 160)}`);
+  });
   const pageErrors = [];
   page.on('pageerror', (e) => pageErrors.push(e.message));
   const brokenAssets = [];
@@ -77,6 +88,7 @@ async function main() {
     for (let i = 0; i < count; i++) {
       const option = options.nth(i);
       const name = (await option.locator('p').first().innerText()).trim();
+      streamIssues = [];
       await option.click();
       let ok = false;
       try {
@@ -102,6 +114,9 @@ async function main() {
             `${v.error ? ` mediaError=${v.error.code}` : ''}` : 'no <video>';
         });
         detail = ` (${errorText ? `${errorText}; ` : ''}${state})`;
+        // Logos are cosmetic; keep only stream-related problems
+        const issues = [...new Set(streamIssues)].filter((s) => !/\.(png|jpe?g|webp|svg|gif)(\?|$)/i.test(s));
+        if (issues.length) console.log(`     ${issues.slice(0, 8).join('\n     ')}`);
       }
       log(ok, `Plays: ${name}${detail}`);
       if (ok) playing++;
