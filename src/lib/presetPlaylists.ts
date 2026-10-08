@@ -15,7 +15,7 @@ export const presetPlaylists: PresetPlaylist[] = [
     description: 'Sports channels worldwide',
     icon: '⚽',
     url: 'https://iptv-org.github.io/iptv/categories/sports.m3u',
-    region: 'Featured',
+    region: 'Categories',
   },
   {
     id: 'news',
@@ -23,7 +23,7 @@ export const presetPlaylists: PresetPlaylist[] = [
     description: 'News channels worldwide',
     icon: '📰',
     url: 'https://iptv-org.github.io/iptv/categories/news.m3u',
-    region: 'Featured',
+    region: 'Categories',
   },
   {
     id: 'entertainment',
@@ -31,7 +31,7 @@ export const presetPlaylists: PresetPlaylist[] = [
     description: 'Entertainment channels worldwide',
     icon: '🎭',
     url: 'https://iptv-org.github.io/iptv/categories/entertainment.m3u',
-    region: 'Featured',
+    region: 'Categories',
   },
   {
     id: 'music',
@@ -39,7 +39,7 @@ export const presetPlaylists: PresetPlaylist[] = [
     description: 'Music channels worldwide',
     icon: '🎵',
     url: 'https://iptv-org.github.io/iptv/categories/music.m3u',
-    region: 'Featured',
+    region: 'Categories',
   },
   {
     id: 'movies',
@@ -47,7 +47,7 @@ export const presetPlaylists: PresetPlaylist[] = [
     description: 'Movie channels worldwide',
     icon: '🎬',
     url: 'https://iptv-org.github.io/iptv/categories/movies.m3u',
-    region: 'Featured',
+    region: 'Categories',
   },
   {
     id: 'kids',
@@ -55,13 +55,13 @@ export const presetPlaylists: PresetPlaylist[] = [
     description: 'Channels for children',
     icon: '👶',
     url: 'https://iptv-org.github.io/iptv/categories/kids.m3u',
-    region: 'Featured',
+    region: 'Categories',
   },
   // ── Asia ──
   {
     id: 'sri-lanka',
     name: 'Sri Lanka',
-    description: 'TV channels from Sri Lanka',
+    description: 'Tested, working Sri Lankan channels',
     icon: '🇱🇰',
     // Self-hosted copy, checked by .github/workflows/check-streams.yml
     url: '/playlists/sri-lanka/lk.m3u',
@@ -392,3 +392,14 @@ export const presetPlaylists: PresetPlaylist[] = [
     region: 'Oceania',
   },
 ];
+
+export const SPOTLIGHT_ID = 'sri-lanka';
+
+export function getPreset(id: string): PresetPlaylist | undefined {
+  return presetPlaylists.find((p) => p.id === id);
+}
+
+/** Regions in display order */
+export const presetRegions: string[] = Array.from(
+  new Set(presetPlaylists.map((p) => p.region || 'Other')),
+);

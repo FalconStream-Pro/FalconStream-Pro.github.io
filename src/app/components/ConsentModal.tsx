@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ShieldAlert } from 'lucide-react';
 import { Checkbox } from './ui/Checkbox';
+import { LOGO_URL } from './AppHeader';
 
 interface ConsentModalProps {
   onAccept: () => void;
@@ -13,26 +13,28 @@ export default function ConsentModal({ onAccept }: ConsentModalProps) {
   const [checked, setChecked] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <Card className="w-full max-w-lg animate-scale-in border-border bg-white shadow-2xl dark:bg-gray-900">
-        <CardHeader className="pb-4">
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
-            <img
-              src="https://res.cloudinary.com/dkj22lm1g/image/upload/v1771081619/FalconStream-Pro_jqpcgb.webp"
-              alt="FalconStream Pro"
-              className="h-14 w-14 rounded-xl object-contain shadow-md"
-            />
-            <div className="text-center sm:text-left">
-              <CardTitle className="text-xl sm:text-2xl">
-                FalconStream Pro
-              </CardTitle>
-              <CardDescription>Legal Disclaimer</CardDescription>
-            </div>
+    <div
+      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 p-0 backdrop-blur-md sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consent-title"
+    >
+      <div className="w-full max-w-lg animate-in fade-in-0 slide-in-from-bottom-4 rounded-t-3xl border border-border bg-card shadow-2xl sm:rounded-3xl">
+        <div className="flex items-center gap-4 border-b border-border p-6">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={LOGO_URL} alt="" className="h-14 w-14 rounded-2xl object-contain shadow-md" />
+          <div>
+            <h2 id="consent-title" className="text-xl font-semibold tracking-tight text-foreground">
+              Welcome to FalconStream Pro
+            </h2>
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <ShieldAlert className="h-4 w-4" /> Please read before continuing
+            </p>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-6">
-          <div className="max-h-60 overflow-y-auto rounded-lg bg-muted p-4 text-sm leading-relaxed text-muted-foreground">
+        <div className="space-y-5 p-6">
+          <div className="scrollbar-thin max-h-56 overflow-y-auto rounded-2xl bg-muted/60 p-4 text-sm leading-relaxed text-muted-foreground">
             <p className="mb-3">
               <strong className="text-foreground">IMPORTANT:</strong> By using this application, you acknowledge
               and agree that:
@@ -47,7 +49,7 @@ export default function ConsentModal({ onAccept }: ConsentModalProps) {
             </ul>
           </div>
 
-          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50">
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-4 transition hover:bg-muted/50">
             <Checkbox checked={checked} onChange={setChecked} />
             <span className="text-sm text-muted-foreground">
               I have read and agree to the terms above. I accept full legal
@@ -55,16 +57,16 @@ export default function ConsentModal({ onAccept }: ConsentModalProps) {
             </span>
           </label>
 
-          <Button
+          <button
+            type="button"
             onClick={onAccept}
             disabled={!checked}
-            className="w-full py-3 text-sm font-semibold sm:text-base"
-            size="lg"
+            className="h-12 w-full rounded-2xl bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
           >
             I Agree &amp; Continue
-          </Button>
-        </CardContent>
-      </Card>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

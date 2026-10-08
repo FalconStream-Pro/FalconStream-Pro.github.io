@@ -1,123 +1,113 @@
+import type { Channel } from './m3uParser';
+
 const CONSENT_KEY = 'falconstream-consent';
-const FAVORITES_KEY = 'falconstream-favorites';
-const RECENT_KEY = 'falconstream-recent';
+const FAVORITES_KEY = 'falconstream-favorites-v2';
+const RECENT_KEY = 'falconstream-recent-v2';
 const VOLUME_KEY = 'falconstream-volume';
+const MUTED_KEY = 'falconstream-muted';
 const THEME_KEY = 'falconstream-theme';
-
-function isBrowser(): boolean {
-  return typeof window !== 'undefined';
-}
-
-export function getConsent(): boolean {
-  if (!isBrowser()) return false;
-  return localStorage.getItem(CONSENT_KEY) === 'true';
-}
-
-export function setConsent(value: boolean): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(CONSENT_KEY, String(value));
-}
-
-export function getFavorites(): string[] {
-  if (!isBrowser()) return [];
-  try {
-    return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-export function setFavorites(ids: string[]): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
-}
-
-export function toggleFavorite(id: string): string[] {
-  const favs = getFavorites();
-  const idx = favs.indexOf(id);
-  if (idx >= 0) {
-    favs.splice(idx, 1);
-  } else {
-    favs.push(id);
-  }
-  setFavorites(favs);
-  return favs;
-}
-
-export interface RecentChannel {
-  id: string;
-  name: string;
-  timestamp: number;
-}
-
-export function getRecent(): RecentChannel[] {
-  if (!isBrowser()) return [];
-  try {
-    return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-export function addRecent(id: string, name: string): void {
-  if (!isBrowser()) return;
-  const recent = getRecent().filter((r) => r.id !== id);
-  recent.unshift({ id, name, timestamp: Date.now() });
-  localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, 20)));
-}
-
-export function getVolume(): number {
-  if (!isBrowser()) return 1;
-  const v = localStorage.getItem(VOLUME_KEY);
-  return v !== null ? parseFloat(v) : 1;
-}
-
-export function setVolume(value: number): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(VOLUME_KEY, String(value));
-}
-
-export function getTheme(): 'dark' | 'light' {
-  if (!isBrowser()) return 'dark';
-  return (localStorage.getItem(THEME_KEY) as 'dark' | 'light') || 'dark';
-}
-
-export function setTheme(theme: 'dark' | 'light'): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(THEME_KEY, theme);
-}
-
 const AUTOPLAY_KEY = 'falconstream-autoplay';
-
-export function getAutoPlay(): boolean {
-  if (!isBrowser()) return false;
-  return localStorage.getItem(AUTOPLAY_KEY) === 'true';
-}
-
-export function setAutoPlay(value: boolean): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(AUTOPLAY_KEY, String(value));
-}
-
 const PROXY_ENABLED_KEY = 'falconstream-proxy-enabled';
 const PROXY_URL_KEY = 'falconstream-proxy-url';
 
-export function getProxyEnabled(): boolean {
-  if (!isBrowser()) return false;
-  return localStorage.getItem(PROXY_ENABLED_KEY) === 'true';
+/** A channel remembered outside of its playlist (favorites, history). */
+export interface SavedChannel {
+  id: string;
+  name: string;
+  url: string;
+  logo: string;
+  group: string;
+  /** Preset id the channel came from, if any, so it can be reopened in context */
+  playlistId?: string;
+  playlistName?: string;
+  timestamp: number;
 }
 
-export function setProxyEnabled(value: boolean): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(PROXY_ENABLED_KEY, String(value));
+function read<T>(key: string, fallback: T): T {
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(key);
+    return raw === null ? fallback : (JSON.parse(raw) as T);
+  } catch {
+    // Earlier versions stored some values (theme, proxy URL) as bare strings
+    return typeof fallback === 'string' && raw !== null ? (raw as T) : fallback;
+  }
 }
 
-export function getProxyUrl(): string {
-  if (!isBrowser()) return '';
-  return localStorage.getItem(PROXY_URL_KEY) || '';
+function write(key: string, value: unknown): void {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage full or blocked (private mode): settings just won't persist
+  }
 }
 
-export function setProxyUrl(url: string): void {
-  if (!isBrowser()) return;
-  localStorage.setItem(PROXY_URL_KEY, url);
+export function toSaved(
+  channel: Channel,
+  playlist?: { id?: string; name?: string },
+): SavedChannel {
+  return {
+    id: channel.id,
+    name: channel.name,
+    url: channel.url,
+    logo: channel.logo,
+    group: channel.group,
+    playlistId: playlist?.id,
+    playlistName: playlist?.name,
+    timestamp: Date.now(),
+  };
 }
+
+export function savedToChannel(s: SavedChannel): Channel {
+  return { id: s.id, name: s.name, url: s.url, logo: s.logo, group: s.group, tvgId: '', tvgName: '' };
+}
+
+export const getConsent = () => read<boolean>(CONSENT_KEY, false) === true;
+export const setConsent = (value: boolean) => write(CONSENT_KEY, value);
+
+export const getFavorites = () => read<SavedChannel[]>(FAVORITES_KEY, []);
+export function toggleFavorite(channel: SavedChannel): SavedChannel[] {
+  const favs = getFavorites();
+  const next = favs.some((f) => f.id === channel.id)
+    ? favs.filter((f) => f.id !== channel.id)
+    : [channel, ...favs];
+  write(FAVORITES_KEY, next);
+  return next;
+}
+
+export const getRecent = () => read<SavedChannel[]>(RECENT_KEY, []);
+export function addRecent(channel: SavedChannel): SavedChannel[] {
+  const next = [channel, ...getRecent().filter((r) => r.id !== channel.id)].slice(0, 24);
+  write(RECENT_KEY, next);
+  return next;
+}
+export function clearRecent(): SavedChannel[] {
+  write(RECENT_KEY, []);
+  return [];
+}
+
+export const getVolume = () => {
+  const v = read<number>(VOLUME_KEY, 1);
+  return typeof v === 'number' && v >= 0 && v <= 1 ? v : 1;
+};
+export const setVolume = (value: number) => write(VOLUME_KEY, value);
+export const getMuted = () => read<boolean>(MUTED_KEY, false) === true;
+export const setMuted = (value: boolean) => write(MUTED_KEY, value);
+
+export type ThemePreference = 'dark' | 'light' | 'system';
+export const getTheme = (): ThemePreference => {
+  const t = read<string>(THEME_KEY, 'system');
+  return t === 'dark' || t === 'light' ? t : 'system';
+};
+export const setTheme = (theme: ThemePreference) => write(THEME_KEY, theme);
+
+export const getAutoPlay = () => read<boolean>(AUTOPLAY_KEY, false) === true;
+export const setAutoPlay = (value: boolean) => write(AUTOPLAY_KEY, value);
+
+export const getProxyEnabled = () => read<boolean>(PROXY_ENABLED_KEY, false) === true;
+export const setProxyEnabled = (value: boolean) => write(PROXY_ENABLED_KEY, value);
+export const getProxyUrl = () => {
+  const v = read<string>(PROXY_URL_KEY, '');
+  return typeof v === 'string' ? v : '';
+};
+export const setProxyUrl = (url: string) => write(PROXY_URL_KEY, url);
