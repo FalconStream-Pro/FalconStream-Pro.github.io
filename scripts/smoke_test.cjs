@@ -90,6 +90,15 @@ async function main() {
       const name = (await option.locator('p').first().innerText()).trim();
       streamIssues = [];
       await option.click();
+      // Official YouTube lives play in YouTube's own iframe; the page can only
+      // check that the embed loads. Their live status is checked by
+      // check_streams.py.
+      const youtube = page.locator('iframe[data-youtube-player]');
+      if (await youtube.waitFor({ timeout: 3000 }).then(() => true).catch(() => false)) {
+        log(true, `Embeds: ${name} (official YouTube live)`);
+        await page.waitForTimeout(500);
+        continue;
+      }
       let ok = false;
       try {
         await page.waitForFunction(
@@ -123,7 +132,7 @@ async function main() {
       // Pause between channels so streams are not all opened at once
       await page.waitForTimeout(500);
     }
-    log(playing > 0, `${playing}/${count} Sri Lanka channels play in the browser`);
+    log(playing > 0, `${playing} Sri Lanka HLS channels play in the browser`);
   }
 
   log(pageErrors.length === 0, `Uncaught page errors: ${pageErrors.length}${pageErrors.length ? ` (${pageErrors.slice(0, 3).join('; ')})` : ''}`);

@@ -7,6 +7,8 @@ with the status of their publicly known live streams.
 - Every stream URL ever listed for a Sri Lankan channel in iptv-org's
   `streams/lk.m3u` is in [`sources/candidates.m3u`](sources/candidates.m3u)
   (91 URLs for 33 channels).
+- Channels marked *official YouTube live* play through YouTube's embedded
+  player, straight from the broadcaster's own YouTube channel.
 - Status is from the *Check Sri Lanka streams* workflow, which runs on a
   GitHub-hosted runner outside Sri Lanka. A stream that is geo-restricted to
   Sri Lanka, or not on air 24/7, can show as not working here.
@@ -15,7 +17,7 @@ with the status of their publicly known live streams.
 |---|---|---|---|
 | A Plus Kids TV | kids | — No public stream known |  |
 | A/L Kuppiya Television | education | — No public stream known |  |
-| Ada Derana 24x7 | news | ❌ No working stream (2 tested) | [www.adaderana.lk](http://www.adaderana.lk/) |
+| Ada Derana 24x7 | news | ✅ Working (official YouTube live) | [www.adaderana.lk](http://www.adaderana.lk/) |
 | Aksharaya TV | general | — No public stream known |  |
 | ART Television | general | — No public stream known | [iwsholdings.com](http://iwsholdings.com/) |
 | Asia TV | entertainment, family, general | ❌ No working stream (2 tested) | [www.asiatvnet.com](https://www.asiatvnet.com/) |
@@ -70,17 +72,17 @@ with the status of their publicly known live streams.
 | Ohm TV | religious | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
 | Parliament of Sri Lanka | legislative | — No public stream known | [www.parliament.lk/en/business-of-parliament/webcast/parliament-live](https://www.parliament.lk/en/business-of-parliament/webcast/parliament-live) |
 | Pirai TV | religious | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
-| Pragna TV |  | ❌ No working stream (1 tested) |  |
+| Pragna TV |  | ✅ Working (official YouTube live) |  |
 | Rangiri Sri Lanka TV |  | — No public stream known | [www.rangirisrilanka.lk/tv/home.html](http://www.rangirisrilanka.lk/tv/home.html) |
 | Ridee TV |  | — No public stream known |  |
 | Rupavahini |  | ❌ No working stream (6 tested) | [www.rupavahini.lk](http://www.rupavahini.lk/) |
 | Santhora TV |  | ❌ No working stream (4 tested) |  |
-| Sathi TV | religious | ❌ No working stream (1 tested) |  |
+| Sathi TV | religious | ✅ Working (official YouTube live) |  |
 | SBC TV | entertainment | — No public stream known | [sbc.lk](https://sbc.lk/) |
 | Shakthi TV |  | ✅ Working | [shakthitv.lk](https://shakthitv.lk/) |
 | Shraddha TV |  | ❌ No working stream (3 tested) | [www.shraddha.lk](https://www.shraddha.lk/) |
 | Sindu TV | music | — No public stream known | [www.sindutv.com](https://www.sindutv.com/) |
-| Sirasa TV |  | ❌ No working stream (2 tested) | [sirasatv.lk](http://sirasatv.lk/) |
+| Sirasa TV |  | 🟡 Official YouTube live, only when Sirasa is broadcasting on YouTube (not 24/7) | [sirasatv.lk](http://sirasatv.lk/) |
 | Siyasa TV | general | — No public stream known |  |
 | Siyatha TV |  | ✅ Working | [siyathatv.lk](http://siyathatv.lk/) |
 | Sooriyan TV |  | ❌ No working stream (2 tested) |  |
@@ -88,16 +90,16 @@ with the status of their publicly known live streams.
 | Star Tamil Television | movies | ❌ No working stream (2 tested) |  |
 | Supreme TV |  | — No public stream known | [www.supremetv.lk](https://www.supremetv.lk/) |
 | Swarga TV |  | — No public stream known | [swargatv.com](http://swargatv.com/) |
-| Swarnavahini |  | ✅ Working | [swarnavahini.lk](https://swarnavahini.lk/) |
+| Swarnavahini |  | ⚠️ Stream works, but Chrome blocks its CORS header; plays only with the proxy on | [swarnavahini.lk](https://swarnavahini.lk/) |
 | Swarnavahini France | general | — No public stream known | [liveat8.lk/LIVESS](https://liveat8.lk/LIVESS/) |
 | Swarnavahini UAE | general | — No public stream known | [liveat8.lk/LIVESS](https://liveat8.lk/LIVESS/) |
 | Talent TV | sports | ✅ Working | [talenttv.lk](https://talenttv.lk/) |
-| The Buddhist |  | ❌ No working stream (3 tested) | [www.thebuddhist.tv](https://www.thebuddhist.tv/) |
+| The Buddhist |  | ✅ Working (official YouTube live) | [www.thebuddhist.tv](https://www.thebuddhist.tv/) |
 | ThePapare TV | news | — No public stream known | [www.thepapare.com](https://www.thepapare.com/) |
 | Three Vision TV | religious | — No public stream known | [3vision.lk](https://3vision.lk/) |
 | TNL TV | general | ❌ No working stream (2 tested) | [tnltv.lk](https://tnltv.lk/) |
 | TV 1 | entertainment | ❌ No working stream (2 tested) | [tv1.lk](http://tv1.lk/) |
-| TV Derana |  | ❌ No working stream (3 tested) | [www.derana.lk](http://www.derana.lk/) |
+| TV Derana |  | ✅ Working (official YouTube live) | [www.derana.lk](http://www.derana.lk/) |
 | TV Didula |  | — No public stream known | [www.tvdidula.lk](https://www.tvdidula.lk/) |
 | UTV | general | — No public stream known | [www.utv.lk](https://www.utv.lk/) |
 | VAPA TV | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
