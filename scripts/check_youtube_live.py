@@ -3,7 +3,7 @@
 
 Fetches https://www.youtube.com/channel/<id>/live (or /@handle/live) and
 reads the channel id, name and live status from the page.
-Usage: check_youtube_live.py ID|@handle [...]
+Usage: check_youtube_live.py CHANNEL_ID|@handle|VIDEO_ID [...]
 """
 import re
 import sys
@@ -21,8 +21,13 @@ print('| Query | Channel id | Channel name | Live now | Video |')
 print('|---|---|---|---|---|')
 for cid in sys.argv[1:]:
     try:
-        path = cid if cid.startswith('@') else f'channel/{cid}'
-        req = urllib.request.Request(f'https://www.youtube.com/{path}/live', headers=HEADERS)
+        if cid.startswith('@'):
+            url = f'https://www.youtube.com/{cid}/live'
+        elif re.fullmatch(r'[\w-]{11}', cid):
+            url = f'https://www.youtube.com/watch?v={cid}'
+        else:
+            url = f'https://www.youtube.com/channel/{cid}/live'
+        req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=20) as res:
             html = res.read().decode('utf-8', 'replace')
     except Exception as e:  # noqa: BLE001 - report any network error

@@ -3,8 +3,14 @@
 https://www.youtube.com/embed/live_stream?channel=UCCK3OZi788Ok44K97WAhLKQ
 #EXTINF:-1 tvg-id="HiruTV.lk@SD" tvg-logo="/logos/lk/HiruTV.png" group-title="Entertainment",Hiru TV (360p) [Not 24/7]
 https://tv.hiruhost.com:1936/8012/8012/playlist.m3u8
+#EXTINF:-1 tvg-id="ITN.lk" tvg-logo="/logos/lk/ITN.png" group-title="Entertainment",ITN (YouTube) [Not 24/7]
+https://www.youtube.com/embed/live_stream?channel=UCQTcNhAZidy1i9wwmdgf2Lw
+#EXTINF:-1 tvg-id="Rupavahini.lk" tvg-logo="/logos/lk/Rupavahini.png" group-title="Entertainment",Jathika Rupavahini (YouTube) [Not 24/7]
+https://www.youtube.com/embed/live_stream?channel=UCi0cdSwyCHgPa95_nX457pw
 #EXTINF:-1 tvg-id="JayaTV.lk@SD" tvg-logo="/logos/lk/JayaTV.png" group-title="Religious",Jaya TV (480p)
 https://live.jayatv.lk/hls/stream.m3u8
+#EXTINF:-1 tvg-id="NethraTV.lk" tvg-logo="/logos/lk/NethraTV.png" group-title="Entertainment",Nethra TV (YouTube) [Not 24/7]
+https://www.youtube.com/embed/live_stream?channel=UC6b6XrsNOxQiS-FdfE8-Avw
 #EXTINF:-1 tvg-id="PragnaTV.lk" tvg-logo="/logos/lk/PragnaTV.png" group-title="Religious",Pragna TV (YouTube)
 https://www.youtube.com/embed/live_stream?channel=UCEwh9uOc4CE561y_KHN4Xug
 #EXTINF:-1 tvg-id="SathiTV.lk" tvg-logo="/logos/lk/SathiTV.png" group-title="Religious",Sathi TV (YouTube)
@@ -21,5 +27,7 @@ https://cast.talenttv.lk/hls/mcrlo1ygwpu8x4bj/index.m3u8
 https://www.youtube.com/embed/live_stream?channel=UC37lrcLuvJmWDoooxwiPXXA
 #EXTINF:-1 tvg-id="TVDerana.lk" tvg-logo="/logos/lk/TVDerana.png" group-title="News",TV Derana (YouTube)
 https://www.youtube.com/embed/live_stream?channel=UCbkMFGQ_RWIf0OiYeOpf6Ng
+#EXTINF:-1 tvg-id="VasanthamTV.lk" tvg-logo="/logos/lk/VasanthamTV.png" group-title="Entertainment",Vasantham TV (YouTube) [Not 24/7]
+https://www.youtube.com/embed/live_stream?channel=UCB5aqOetGShRd8COycdf_PQ
 #EXTINF:-1 tvg-id="VerbumTV.lk@SD" tvg-logo="/logos/lk/VerbumTV.png" group-title="Religious",Verbum TV
 https://video-eu1.streamerr.co/hls/scb80244b91/live.m3u8
