@@ -43,7 +43,7 @@ with the status of their publicly known live streams.
 | Hi TV |  | — No public stream known | [hitv.dailymirror.lk](http://hitv.dailymirror.lk/) |
 | Hiru TV | entertainment | ✅ Working | [www.hirutv.lk](https://www.hirutv.lk/) |
 | Holy Mary | religious | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
-| Imai TV | culture | ✅ Working | [imaitv.com](https://imaitv.com/) |
+| Imai TV | culture | ⚠️ Unreliable: stream blocks browsers (CORS) and was offline on other checks | [imaitv.com](https://imaitv.com/) |
 | ITN | entertainment | ❌ No working stream (4 tested) | [www.itntv.lk](https://www.itntv.lk/) |
 | Jaya TV | religious | ✅ Working | [www.jayatv.lk](https://www.jayatv.lk/) |
 | Kalvi TV-1 | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
