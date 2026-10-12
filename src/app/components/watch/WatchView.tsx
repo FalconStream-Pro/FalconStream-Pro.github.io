@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight, Star, Share2, Repeat, ArrowLeft } from 'luci
 import { Channel, describeChannel } from '@/lib/m3uParser';
 import { cn } from '@/lib/utils';
 import VideoPlayer from './VideoPlayer';
+import YouTubePlayer from './YouTubePlayer';
+import { isYouTube } from '@/lib/youtube';
 import ChannelList from './ChannelList';
 import ChannelLogo from '../ChannelLogo';
 import { showToast } from '../Toast';
@@ -52,15 +54,19 @@ export default function WatchView({
     <div className="mx-auto grid w-full max-w-[1600px] gap-4 px-3 pb-6 pt-3 sm:px-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6 lg:pt-6">
       <section aria-label="Player" className="min-w-0 space-y-4">
         <div className="lg:sticky lg:top-20">
-          <VideoPlayer
-            url={active.url}
-            channelName={active.name}
-            logo={active.logo}
-            proxyUrl={proxyUrl}
-            hasNext={!!next}
-            onNext={() => next && onSelect(next)}
-            onEnded={() => autoPlay && next && onSelect(next)}
-          />
+          {isYouTube(active.url) ? (
+            <YouTubePlayer url={active.url} channelName={active.name} />
+          ) : (
+            <VideoPlayer
+              url={active.url}
+              channelName={active.name}
+              logo={active.logo}
+              proxyUrl={proxyUrl}
+              hasNext={!!next}
+              onNext={() => next && onSelect(next)}
+              onEnded={() => autoPlay && next && onSelect(next)}
+            />
+          )}
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 items-center gap-3">

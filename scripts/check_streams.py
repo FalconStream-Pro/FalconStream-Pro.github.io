@@ -8,7 +8,9 @@ downloads one media segment. Also reports whether a browser could play it
 Usage: check_streams.py PLAYLIST.m3u [--write-working OUT.m3u]
 Prints a Markdown table; appends it to $GITHUB_STEP_SUMMARY when set.
 """
+import json
 import os
+import re
 import sys
 import urllib.parse
 import urllib.request
@@ -28,8 +30,38 @@ def fetch(url, limit=2_000_000):
         return res.geturl(), res.headers, res.read(limit)
 
 
+YOUTUBE_CHANNEL_RE = re.compile(r'youtube(?:-nocookie)?\.com/.*(?:channel=|/channel/)(UC[\w-]{22})')
+
+
+def check_youtube(channel_id):
+    """A YouTube channel works if it is live now and allows embedding."""
+    headers = {**HEADERS, 'Accept-Language': 'en-US,en;q=0.9', 'Cookie': 'CONSENT=YES+1; SOCS=CAI'}
+    try:
+        req = urllib.request.Request(f'https://www.youtube.com/channel/{channel_id}/live', headers=headers)
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as res:
+            html = res.read().decode('utf-8', 'replace')
+    except Exception as e:  # noqa: BLE001 - report any network error
+        return False, f'YouTube: {type(e).__name__}', 'youtube'
+    if '"isLiveNow":true' not in html and '"isLive":true' not in html:
+        return False, 'not live on YouTube right now', 'youtube'
+    video = re.search(r'"videoId":"([\w-]{11})"', html)
+    if not video:
+        return False, 'live, but no video id found', 'youtube'
+    oembed = ('https://www.youtube.com/oembed?format=json&url='
+              + urllib.parse.quote(f'https://www.youtube.com/watch?v={video.group(1)}'))
+    try:
+        with urllib.request.urlopen(urllib.request.Request(oembed, headers=headers), timeout=TIMEOUT) as res:
+            title = json.loads(res.read()).get('title', '')
+    except Exception:  # noqa: BLE001 - 401 means embedding is disabled
+        return False, 'live, but embedding is disabled', 'youtube'
+    return True, f'live: {title[:50]}', 'youtube'
+
+
 def check(url):
     """Return (ok, detail, cors) for a stream URL."""
+    yt = YOUTUBE_CHANNEL_RE.search(url)
+    if yt:
+        return check_youtube(yt.group(1))
     cors = None
     current = url
     for depth in range(5):
@@ -81,8 +113,11 @@ def main():
     working = []
     for (extinf, url), (ok, detail, cors) in zip(entries, results):
         name = extinf.split(',', 1)[1]
-        browser = 'yes' if ok and url.startswith('https://') and cors else (
-            'needs proxy' if ok else '-')
+        if cors == 'youtube':
+            browser = 'YouTube embed' if ok else '-'
+        else:
+            browser = 'yes' if ok and url.startswith('https://') and cors else (
+                'needs proxy' if ok else '-')
         rows.append(f"| {'✅' if ok else '❌'} | {name} | {browser} | {detail} | {url} |")
         if ok:
             working.append(f'{extinf}\n{url}')

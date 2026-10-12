@@ -9,6 +9,7 @@ on:
       - 'scripts/sniff_streams.cjs'
       - 'scripts/diagnose_stream.py'
       - 'scripts/find_streams.py'
+      - 'scripts/check_youtube_live.py'
       - '.github/workflows/find-streams.yml'
 
 permissions:
@@ -22,6 +23,24 @@ jobs:
 
       - name: Diagnose streams that fail in the browser
         run: python3 scripts/diagnose_stream.py https://teledrama.ebc.lk/TTT/proxy.php
+
+      - name: Which official YouTube channels are live now
+        # Sirasa (from online-television.net's embed) and the official
+        # channels iptv-org used to relay
+        run: >-
+          python3 scripts/check_youtube_live.py
+          UCn0XmAUFv6d2tofMFEesSNw
+          UCi0cdSwyCHgPa95_nX457pw
+          UCbkMFGQ_RWIf0OiYeOpf6Ng
+          UCCK3OZi788Ok44K97WAhLKQ
+          UC1WREaxq8LRhdOOmzSFg2pA
+          UC37lrcLuvJmWDoooxwiPXXA
+          UCSe8uUIt3EM83y9N0WHSx_w
+          UC7kBHRaynsJMB6JcooGLTmA
+          UC6b6XrsNOxQiS-FdfE8-Avw
+          UCEwh9uOc4CE561y_KHN4Xug
+          UCj-bQzHpWB5MtmJoDzizzbw
+          UCIVp6MLC1tB3oL0wfOtlIaw
 
       - name: Scan channel pages for stream links
         run: >-
