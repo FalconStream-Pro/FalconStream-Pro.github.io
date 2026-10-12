@@ -1,0 +1,38 @@
+name: Fetch channel logos
+
+# Downloads logos for the Sri Lanka channels into public/logos/lk and
+# commits them to the branch the workflow runs on.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/fetch_logos.py'
+      - '.github/workflows/fetch-logos.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  logos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # On pull requests, commit to the PR branch rather than the merge ref
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Download logos
+        run: >-
+          python3 scripts/fetch_logos.py public/logos/lk
+          Rupavahini ChannelEye NethraTV ITN VasanthamTV TVDerana AdaDerana24x7
+          SirasaTV ShakthiTV TV1 HiruTV Swarnavahini SiyathaTV JayaTV TalentTV
+          VerbumTV TheBuddhist PragnaTV SathiTV TNLTV
+
+      - name: Commit logos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/logos/lk
+          git diff --cached --quiet && { echo "No logo changes"; exit 0; }
+          git commit -m "Add self-hosted Sri Lanka channel logos (from iptv-org/database)"
+          git push
