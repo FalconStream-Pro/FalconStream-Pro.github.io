@@ -104,5 +104,5 @@ with the status of their publicly known live streams.
 | UTV | general | — No public stream known | [www.utv.lk](https://www.utv.lk/) |
 | VAPA TV | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
 | Vasantham TV | general | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.vasantham.lk](https://www.vasantham.lk/) |
-| Verbum TV |  | ✅ Working | [www.verbumtv.com](https://www.verbumtv.com/) |
+| Verbum TV | religious | ⚠️ Unreliable: the server answers, but the stream does not start in Chrome (2 of the last 3 browser tests) | [www.verbumtv.com](https://www.verbumtv.com/) |
 | Yarl TV | entertainment | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
