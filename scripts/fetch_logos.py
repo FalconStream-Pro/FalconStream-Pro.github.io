@@ -3,15 +3,16 @@
 they load from our own origin instead of hotlinking imgur/Wikimedia.
 
 Usage: fetch_logos.py OUT_DIR TVG_ID [TVG_ID ...]
-Writes OUT_DIR/<id>.png (max 256px, transparent background kept).
-Needs ImageMagick (`convert`).
+Writes OUT_DIR/<id>.png (max 256px, transparent background kept), or
+OUT_DIR/<id>.svg for vector logos. Needs Pillow.
 """
 import csv
 import io
 import os
-import subprocess
 import sys
 import urllib.request
+
+from PIL import Image
 
 LOGOS_CSV = 'https://raw.githubusercontent.com/iptv-org/database/master/data/logos.csv'
 HEADERS = {'User-Agent': 'Mozilla/5.0 (FalconStream logo fetcher)'}
@@ -31,9 +32,14 @@ for cid in ids:
         try:
             with urllib.request.urlopen(urllib.request.Request(r['url'], headers=HEADERS), timeout=30) as res:
                 data = res.read()
-            dest = os.path.join(out_dir, f'{cid}.png')
-            subprocess.run(['convert', '-', '-background', 'none', '-resize', '256x256>', '-strip', dest],
-                           input=data, check=True)
+            if data.lstrip()[:5] in (b'<?xml', b'<svg ') or b'<svg' in data[:500]:
+                with open(os.path.join(out_dir, f'{cid}.svg'), 'wb') as f:
+                    f.write(data)
+            else:
+                img = Image.open(io.BytesIO(data))
+                img = img.convert('RGBA')
+                img.thumbnail((256, 256))
+                img.save(os.path.join(out_dir, f'{cid}.png'), optimize=True)
             print(f'ok   {cid:<18} {r["url"]}')
             ok = True
             break
@@ -42,4 +48,5 @@ for cid in ids:
     if not ok:
         failed += 1
         print(f'FAIL {cid}: no logo could be downloaded')
-sys.exit(1 if failed else 0)
+# Channels without a logo fall back to initials in the UI
+print(f'{failed} channel(s) without a logo')

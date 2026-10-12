@@ -21,6 +21,9 @@ jobs:
           # On pull requests, commit to the PR branch rather than the merge ref
           ref: ${{ github.head_ref || github.ref_name }}
 
+      - name: Install Pillow
+        run: pip install pillow
+
       - name: Download logos
         run: >-
           python3 scripts/fetch_logos.py public/logos/lk
