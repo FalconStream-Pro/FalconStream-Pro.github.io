@@ -44,7 +44,7 @@ with the status of their publicly known live streams.
 | Hiru TV | entertainment | ✅ Working | [www.hirutv.lk](https://www.hirutv.lk/) |
 | Holy Mary | religious | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
 | Imai TV | culture | ⚠️ Unreliable: stream blocks browsers (CORS) and was offline on other checks | [imaitv.com](https://imaitv.com/) |
-| ITN | entertainment | ❌ No working stream (4 tested) | [www.itntv.lk](https://www.itntv.lk/) |
+| ITN | entertainment | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.itntv.lk](https://www.itntv.lk/) |
 | Jaya TV | religious | ✅ Working | [www.jayatv.lk](https://www.jayatv.lk/) |
 | Kalvi TV-1 | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
 | Kalvi TV-2 | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
@@ -67,7 +67,7 @@ with the status of their publicly known live streams.
 | Nenasa Tamil Grade 6-9 | education | — No public stream known | [nenasa.lk](http://nenasa.lk/) |
 | Nenasa Tamil O/L | education | — No public stream known | [nenasa.lk](http://nenasa.lk/) |
 | Nenasa TV | education | — No public stream known | [nenasa.lk](http://nenasa.lk/) |
-| Nethra TV | general | ❌ No working stream (3 tested) | [nethratv.lk](https://nethratv.lk/) |
+| Nethra TV | general | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [nethratv.lk](https://nethratv.lk/) |
 | News1st | news | — No public stream known | [www.newsfirst.lk/live](https://www.newsfirst.lk/live/) |
 | Ohm TV | religious | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
 | Parliament of Sri Lanka | legislative | — No public stream known | [www.parliament.lk/en/business-of-parliament/webcast/parliament-live](https://www.parliament.lk/en/business-of-parliament/webcast/parliament-live) |
@@ -75,7 +75,7 @@ with the status of their publicly known live streams.
 | Pragna TV |  | ✅ Working (official YouTube live) |  |
 | Rangiri Sri Lanka TV |  | — No public stream known | [www.rangirisrilanka.lk/tv/home.html](http://www.rangirisrilanka.lk/tv/home.html) |
 | Ridee TV |  | — No public stream known |  |
-| Rupavahini |  | ❌ No working stream (6 tested) | [www.rupavahini.lk](http://www.rupavahini.lk/) |
+| Rupavahini (Jathika Rupavahini) | general | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.rupavahini.lk](http://www.rupavahini.lk/) |
 | Santhora TV |  | ❌ No working stream (4 tested) |  |
 | Sathi TV | religious | ✅ Working (official YouTube live) |  |
 | SBC TV | entertainment | — No public stream known | [sbc.lk](https://sbc.lk/) |
@@ -103,6 +103,6 @@ with the status of their publicly known live streams.
 | TV Didula |  | — No public stream known | [www.tvdidula.lk](https://www.tvdidula.lk/) |
 | UTV | general | — No public stream known | [www.utv.lk](https://www.utv.lk/) |
 | VAPA TV | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
-| Vasantham TV |  | ❌ No working stream (5 tested) | [www.vasantham.lk](https://www.vasantham.lk/) |
-| Verbum TV |  | ✅ Working | [www.verbumtv.com](https://www.verbumtv.com/) |
+| Vasantham TV | general | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.vasantham.lk](https://www.vasantham.lk/) |
+| Verbum TV | religious | ⚠️ Unreliable: the server answers, but the stream does not start in Chrome (2 of the last 3 browser tests) | [www.verbumtv.com](https://www.verbumtv.com/) |
 | Yarl TV | entertainment | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |

@@ -25,30 +25,40 @@ jobs:
         run: python3 scripts/diagnose_stream.py https://teledrama.ebc.lk/TTT/proxy.php
 
       - name: Which official YouTube channels are live now
-        # Sirasa (from online-television.net's embed) and the official
-        # channels iptv-org used to relay
+        # Rupavahini and the other state channels first, then the rest
         run: >-
           python3 scripts/check_youtube_live.py
-          UCn0XmAUFv6d2tofMFEesSNw
           UCi0cdSwyCHgPa95_nX457pw
+          UC6b6XrsNOxQiS-FdfE8-Avw
+          UCQTcNhAZidy1i9wwmdgf2Lw
+          UCB5aqOetGShRd8COycdf_PQ
+          Nsu5Mxsj4LE
+          UCn0XmAUFv6d2tofMFEesSNw
           UCbkMFGQ_RWIf0OiYeOpf6Ng
           UCCK3OZi788Ok44K97WAhLKQ
           UC1WREaxq8LRhdOOmzSFg2pA
           UC37lrcLuvJmWDoooxwiPXXA
           UCSe8uUIt3EM83y9N0WHSx_w
           UC7kBHRaynsJMB6JcooGLTmA
-          UC6b6XrsNOxQiS-FdfE8-Avw
           UCEwh9uOc4CE561y_KHN4Xug
           UCj-bQzHpWB5MtmJoDzizzbw
-          UCIVp6MLC1tB3oL0wfOtlIaw
+
+      - name: Resolve state channels' YouTube handles
+        run: >-
+          python3 scripts/check_youtube_live.py
+          @RupavahiniLK @SLRCRupavahini @rupavahini @RupavahiniTV
+          @ChannelEyeSL @channeleye @NethraTV @nethratvlk
+          @ITNSriLanka @itntvlk @ITN @VasanthamTV @VasanthamTVSL
 
       - name: Scan channel pages for stream links
         run: >-
           python3 scripts/find_streams.py
-          https://live.sirasatv.lk/
-          https://www.newsfirst.lk/live/
-          https://tvivu.com/watch/sirasa-tv
-          https://livetvcentral.com/tv/sirasa-tv
+          https://www.rupavahini.lk/
+          http://www.rupavahini.lk/live
+          https://www.itntv.lk/
+          https://www.channeleye.lk/
+          https://nethratv.lk/
+          https://www.vasantham.lk/
 
       - name: Install Playwright
         run: |
@@ -60,11 +70,10 @@ jobs:
           BROWSER_CHANNEL: chrome
         run: >-
           node scripts/sniff_streams.cjs
-          https://live.sirasatv.lk/
-          https://www.newsfirst.lk/live/
-          https://tvivu.com/watch/sirasa-tv
-          https://livetvcentral.com/tv/sirasa-tv
-          https://www.peomobile.com/live/live-sirasa-tv
-          https://www.yupptv.com/channels/sirasa-tv/live
-          https://lakfreedom.info/local-tv-channels/136-sirasa-tv-live
-          https://online-television.net/3880-sirasa-tv.html
+          https://www.rupavahini.lk/
+          https://www.itntv.lk/
+          https://www.channeleye.lk/
+          https://nethratv.lk/
+          https://online-television.net/3876-rupavahini.html
+          https://lakfreedom.info/local-tv-channels
+          https://tvgarden.co/countries/sri-lanka
