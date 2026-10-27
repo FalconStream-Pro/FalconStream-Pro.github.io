@@ -68,6 +68,15 @@ export const presetPlaylists: PresetPlaylist[] = [
     region: 'Asia',
   },
   {
+    id: 'sri-lanka-radio',
+    name: 'Sri Lanka Radio',
+    description: 'Live Sri Lankan FM radio stations',
+    icon: '📻',
+    // Self-hosted copy, checked by the smoke test and check-streams.yml
+    url: '/playlists/sri-lanka/radio.m3u',
+    region: 'Asia',
+  },
+  {
     id: 'india',
     name: 'India',
     description: 'TV channels from India',
@@ -394,6 +403,7 @@ export const presetPlaylists: PresetPlaylist[] = [
 ];
 
 export const SPOTLIGHT_ID = 'sri-lanka';
+export const SPOTLIGHT_RADIO_ID = 'sri-lanka-radio';
 
 export function getPreset(id: string): PresetPlaylist | undefined {
   return presetPlaylists.find((p) => p.id === id);

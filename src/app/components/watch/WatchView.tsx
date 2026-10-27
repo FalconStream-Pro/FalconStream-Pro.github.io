@@ -62,6 +62,7 @@ export default function WatchView({
               channelName={active.name}
               logo={active.logo}
               proxyUrl={proxyUrl}
+              audioOnly={active.radio}
               hasNext={!!next}
               onNext={() => next && onSelect(next)}
               onEnded={() => autoPlay && next && onSelect(next)}

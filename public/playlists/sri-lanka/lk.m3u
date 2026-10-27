@@ -3,8 +3,12 @@
 https://www.youtube.com/embed/live_stream?channel=UCCK3OZi788Ok44K97WAhLKQ
 #EXTINF:-1 tvg-id="HiruTV.lk@SD" tvg-logo="/logos/lk/HiruTV.png" group-title="Entertainment",Hiru TV (360p) [Not 24/7]
 https://tv.hiruhost.com:1936/8012/8012/playlist.m3u8
+#EXTINF:-1 tvg-id="ImaiTV.lk" tvg-logo="/logos/lk/ImaiTV.png" group-title="Entertainment",Imai TV (1080p) [Not 24/7]
+https://live20.bozztv.com/akamaissh101/ssh101/imaitv/playlist.m3u8
 #EXTINF:-1 tvg-id="ITN.lk" tvg-logo="/logos/lk/ITN.png" group-title="Entertainment",ITN (YouTube) [Not 24/7]
 https://www.youtube.com/embed/live_stream?channel=UCQTcNhAZidy1i9wwmdgf2Lw
+#EXTINF:-1 tvg-id="Rupavahini.lk" tvg-logo="/logos/lk/Rupavahini.png" group-title="Entertainment",Jathika Rupavahini (720p)
+https://rpn.bozztv.com/slrclive/slrc/slrclive/index.m3u8
 #EXTINF:-1 tvg-id="Rupavahini.lk" tvg-logo="/logos/lk/Rupavahini.png" group-title="Entertainment",Jathika Rupavahini (YouTube) [Not 24/7]
 https://www.youtube.com/embed/live_stream?channel=UCi0cdSwyCHgPa95_nX457pw
 #EXTINF:-1 tvg-id="JayaTV.lk@SD" tvg-logo="/logos/lk/JayaTV.png" group-title="Religious",Jaya TV (480p)
@@ -29,3 +33,5 @@ https://www.youtube.com/embed/live_stream?channel=UC37lrcLuvJmWDoooxwiPXXA
 https://www.youtube.com/embed/live_stream?channel=UCbkMFGQ_RWIf0OiYeOpf6Ng
 #EXTINF:-1 tvg-id="VasanthamTV.lk" tvg-logo="/logos/lk/VasanthamTV.png" group-title="Entertainment",Vasantham TV (YouTube) [Not 24/7]
 https://www.youtube.com/embed/live_stream?channel=UCB5aqOetGShRd8COycdf_PQ
+#EXTINF:-1 tvg-id="VerbumTV.lk" tvg-logo="/logos/lk/VerbumTV.png" group-title="Religious",Verbum TV [Not 24/7]
+https://video-eu1.streamerr.co/hls/scb80244b91/live.m3u8

@@ -12,15 +12,21 @@ with the status of their publicly known live streams.
 - Status is from the *Check Sri Lanka streams* workflow, which runs on a
   GitHub-hosted runner outside Sri Lanka. A stream that is geo-restricted to
   Sri Lanka, or not on air 24/7, can show as not working here.
+- **Radio**: 28 Sri Lankan FM and online radio stations from
+  [radio-browser.info](https://www.radio-browser.info/) that play in a browser
+  are in [`radio.m3u`](radio.m3u) (the site's Sri Lanka Radio preset).
+  Stations that only stream over plain `http://` (SLBC's national services,
+  Sirasa FM, Yes FM, V FM and others) cannot play on an HTTPS site.
 
 | Channel | Category | Stream | Website |
 |---|---|---|---|
 | A Plus Kids TV | kids | — No public stream known |  |
 | A/L Kuppiya Television | education | — No public stream known |  |
 | Ada Derana 24x7 | news | ✅ Working (official YouTube live) | [www.adaderana.lk](http://www.adaderana.lk/) |
+| Ahasa TV | general | ❌ Stream (ahasatv.lk) blocks browsers (CORS) | [ahasatv.lk](https://ahasatv.lk/) |
 | Aksharaya TV | general | — No public stream known |  |
 | ART Television | general | — No public stream known | [iwsholdings.com](http://iwsholdings.com/) |
-| Asia TV | entertainment, family, general | ❌ No working stream (2 tested) | [www.asiatvnet.com](https://www.asiatvnet.com/) |
+| Asia TV | entertainment, family, general | ❌ Current stream (stream.asiatvnet.com) blocks browsers (CORS) | [www.asiatvnet.com](https://www.asiatvnet.com/) |
 | Athavan TV | general | ❌ No working stream (5 tested) | [athavantv.com](https://athavantv.com/) |
 | Beauty TV | lifestyle | — No public stream known | [beautytv.lk](https://beautytv.lk/) |
 | Capital TV | entertainment | — No public stream known | [capitaltv.lk](https://capitaltv.lk/) |
@@ -43,7 +49,7 @@ with the status of their publicly known live streams.
 | Hi TV |  | — No public stream known | [hitv.dailymirror.lk](http://hitv.dailymirror.lk/) |
 | Hiru TV | entertainment | ✅ Working | [www.hirutv.lk](https://www.hirutv.lk/) |
 | Holy Mary | religious | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
-| Imai TV | culture | ⚠️ Unreliable: stream blocks browsers (CORS) and was offline on other checks | [imaitv.com](https://imaitv.com/) |
+| Imai TV | culture | ✅ Working, but has been offline at times (marked Not 24/7) | [imaitv.com](https://imaitv.com/) |
 | ITN | entertainment | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.itntv.lk](https://www.itntv.lk/) |
 | Jaya TV | religious | ✅ Working | [www.jayatv.lk](https://www.jayatv.lk/) |
 | Kalvi TV-1 | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
@@ -75,7 +81,7 @@ with the status of their publicly known live streams.
 | Pragna TV |  | ✅ Working (official YouTube live) |  |
 | Rangiri Sri Lanka TV |  | — No public stream known | [www.rangirisrilanka.lk/tv/home.html](http://www.rangirisrilanka.lk/tv/home.html) |
 | Ridee TV |  | — No public stream known |  |
-| Rupavahini (Jathika Rupavahini) | general | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.rupavahini.lk](http://www.rupavahini.lk/) |
+| Rupavahini (Jathika Rupavahini) | general | ✅ Working (720p HLS), plus the official YouTube live (not 24/7) | [www.rupavahini.lk](http://www.rupavahini.lk/) |
 | Santhora TV |  | ❌ No working stream (4 tested) |  |
 | Sathi TV | religious | ✅ Working (official YouTube live) |  |
 | SBC TV | entertainment | — No public stream known | [sbc.lk](https://sbc.lk/) |
@@ -104,5 +110,5 @@ with the status of their publicly known live streams.
 | UTV | general | — No public stream known | [www.utv.lk](https://www.utv.lk/) |
 | VAPA TV | education | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |
 | Vasantham TV | general | 🟡 Official YouTube live, only when the channel is broadcasting on YouTube (not 24/7) | [www.vasantham.lk](https://www.vasantham.lk/) |
-| Verbum TV | religious | ⚠️ Unreliable: the server answers, but the stream does not start in Chrome (2 of the last 3 browser tests) | [www.verbumtv.com](https://www.verbumtv.com/) |
+| Verbum TV | religious | ✅ Working, but did not start in Chrome on some checks (marked Not 24/7) | [www.verbumtv.com](https://www.verbumtv.com/) |
 | Yarl TV | entertainment | — No public stream known | [www.dantv.lk](https://www.dantv.lk/) |

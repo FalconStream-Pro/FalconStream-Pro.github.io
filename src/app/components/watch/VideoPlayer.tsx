@@ -18,6 +18,8 @@ interface VideoPlayerProps {
   channelName: string;
   logo?: string;
   proxyUrl?: string;
+  /** Radio station: no picture, played with the browser's own audio player */
+  audioOnly?: boolean;
   hasNext: boolean;
   onNext: () => void;
   onEnded?: () => void;
@@ -82,7 +84,7 @@ function IconButton({
 }
 
 export default function VideoPlayer({
-  url, channelName, logo, proxyUrl, hasNext, onNext, onEnded,
+  url, channelName, logo, proxyUrl, audioOnly = false, hasNext, onNext, onEnded,
 }: VideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -104,6 +106,8 @@ export default function VideoPlayer({
   const [fullscreen, setFullscreen] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
   const [isLive, setIsLive] = useState(true);
+  // Stream turned out to have no video track (e.g. an HLS radio stream)
+  const [noPicture, setNoPicture] = useState(false);
 
   // Restore volume once
   useEffect(() => {
@@ -141,6 +145,7 @@ export default function VideoPlayer({
     setLevel(-1);
     setQualityOpen(false);
     setAutoMuted(false);
+    setNoPicture(false);
     video.removeAttribute('data-av-ready');
     video.volume = getVolume();
     // Live segments often start mid-GOP: the first picture then stays frozen
@@ -172,7 +177,9 @@ export default function VideoPlayer({
       released = true;
       holdingSound.current = false;
       clearTimeout(audioOnlyTimer);
-      video.setAttribute('data-av-ready', '');
+      // Time sound and picture started (performance.now()), read by the smoke test
+      video.setAttribute('data-av-ready', String(Math.round(performance.now())));
+      if (!video.videoWidth) setNoPicture(true);
       const wantSound = !getMuted();
       // Without a user gesture on the page the browser would pause unmuted
       // playback: stay muted and offer "Tap to unmute" instead.
@@ -208,6 +215,7 @@ export default function VideoPlayer({
     };
     const onPlaying = () => {
       started = true;
+      if (audioOnly) return releaseSound();
       if (!released && !audioOnlyTimer) {
         audioOnlyTimer = setTimeout(() => {
           if (!video.videoWidth) releaseSound();
@@ -219,7 +227,8 @@ export default function VideoPlayer({
 
     const proxied = (u: string) => buildProxiedUrl(u, proxyUrl);
 
-    if (!PROGRESSIVE_RE.test(url) && Hls.isSupported()) {
+    const hlsUrl = !audioOnly && !PROGRESSIVE_RE.test(url);
+    if (hlsUrl && Hls.isSupported()) {
       const hls = new Hls({
         ...HLS_CONFIG,
         ...(proxyUrl
@@ -256,7 +265,7 @@ export default function VideoPlayer({
           fail('This stream could not be played.');
         }
       });
-    } else if (!PROGRESSIVE_RE.test(url) && video.canPlayType('application/vnd.apple.mpegurl')) {
+    } else if (hlsUrl && video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = proxied(url);
       tryPlay();
     } else {
@@ -283,7 +292,7 @@ export default function VideoPlayer({
       video.removeAttribute('src');
       video.load();
     };
-  }, [url, proxyUrl, attempt, tryPlay]);
+  }, [url, proxyUrl, audioOnly, attempt, tryPlay]);
 
   // Mirror media element state
   useEffect(() => {
@@ -459,6 +468,25 @@ export default function VideoPlayer({
         onEnded={onEnded}
         aria-label={`${channelName} live stream`}
       />
+
+      {/* Radio: no picture, so show the station instead of a black frame */}
+      {(audioOnly || noPicture) && status !== 'error' && status !== 'blocked' && (
+        <div
+          data-radio-view
+          className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[radial-gradient(60%_80%_at_50%_40%,rgba(99,102,241,0.35),transparent_70%),linear-gradient(180deg,#0b0b14,#000)] p-6 text-center"
+        >
+          <ChannelLogo name={channelName} logo={logo} className="h-20 w-20 text-3xl shadow-2xl ring-4 ring-white/10 sm:h-28 sm:w-28 sm:text-4xl" />
+          <div className="space-y-1.5">
+            <p className="text-lg font-semibold text-white sm:text-2xl">{title}</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/70">
+              {status === 'playing' ? (
+                <span className="eq h-4" aria-hidden><span /><span /><span /></span>
+              ) : null}
+              Live radio
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Loading / buffering */}
       {(status === 'loading' || status === 'buffering') && (

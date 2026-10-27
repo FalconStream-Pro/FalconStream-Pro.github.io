@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { History, Star, Github } from 'lucide-react';
 import { parseM3U, Channel } from '@/lib/m3uParser';
-import { getPreset, presetPlaylists, SPOTLIGHT_ID, type PresetPlaylist } from '@/lib/presetPlaylists';
+import { getPreset, presetPlaylists, SPOTLIGHT_ID, SPOTLIGHT_RADIO_ID, type PresetPlaylist } from '@/lib/presetPlaylists';
 import { buildProxiedUrl } from '@/lib/utils';
 import {
   getConsent, setConsent, getFavorites, toggleFavorite, getRecent, addRecent, clearRecent,
@@ -234,6 +234,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl space-y-12 px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
             <Spotlight
               preset={spotlight}
+              radioPreset={getPreset(SPOTLIGHT_RADIO_ID)}
               loading={loadingId === spotlight.id}
               disabled={loadingId !== null}
               onWatch={(p, channelId) => loadPreset(p, channelId)}

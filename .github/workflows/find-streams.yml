@@ -12,6 +12,7 @@ on:
       - 'scripts/check_youtube_live.py'
       - 'scripts/bench_player.cjs'
       - 'scripts/find_radio.py'
+      - 'public/playlists/sri-lanka/lk.m3u'
       - 'public/playlists/sri-lanka/sources/new-candidates.m3u'
       - '.github/workflows/find-streams.yml'
 
@@ -37,10 +38,17 @@ jobs:
           BROWSER_CHANNEL: chrome
         run: node scripts/bench_player.cjs public/playlists/sri-lanka/lk.m3u --configs old,new --rounds 2
 
-      - name: Play the new candidate streams and radio stations in Chrome
+      - name: Benchmark on a slow connection (3 Mbps, 150 ms), counting buffering stalls
         env:
           BROWSER_CHANNEL: chrome
-        run: node scripts/bench_player.cjs public/playlists/sri-lanka/sources/new-candidates.m3u radio-lk.m3u
+        run: >-
+          node scripts/bench_player.cjs public/playlists/sri-lanka/lk.m3u
+          --configs old,new --throttle 3000:150 --watch 30
+
+      - name: Play the new candidate streams in Chrome
+        env:
+          BROWSER_CHANNEL: chrome
+        run: node scripts/bench_player.cjs public/playlists/sri-lanka/sources/new-candidates.m3u
 
       - name: Diagnose streams that fail in the browser
         run: python3 scripts/diagnose_stream.py https://teledrama.ebc.lk/TTT/proxy.php
