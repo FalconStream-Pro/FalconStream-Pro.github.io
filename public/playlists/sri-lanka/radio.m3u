@@ -25,7 +25,7 @@ https://srv02.onlineradio.voaplus.com/lite878
 https://cp12.serverse.com/proxy/itnfm?mp=/stream
 #EXTINF:-1 tvg-id="VasanthamFM.lk" tvg-logo="/logos/lk-radio/VasanthamFM.svg" group-title="FM stations" radio="true",Vasantham FM
 https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream
-#EXTINF:-1 tvg-id="KothmaleFM.lk" tvg-logo="/logos/lk-radio/KothmaleFM.png" group-title="FM stations" radio="true",Kothmale FM
+#EXTINF:-1 tvg-id="KothmaleFM.lk" tvg-logo="" group-title="FM stations" radio="true",Kothmale FM
 https://s11.myradiostream.com:25116/listen.mp3
 #EXTINF:-1 tvg-id="SLBCTamil.lk" tvg-logo="" group-title="FM stations" radio="true",SLBC Tamil National Service
 https://stream-32.zeno.fm/xekhrn4zetzuv?zs=KXT1gTNYSemcxyslV6-vdA
