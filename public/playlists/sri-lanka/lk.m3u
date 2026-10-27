@@ -3,7 +3,7 @@
 https://www.youtube.com/embed/live_stream?channel=UCCK3OZi788Ok44K97WAhLKQ
 #EXTINF:-1 tvg-id="HiruTV.lk@SD" tvg-logo="/logos/lk/HiruTV.png" group-title="Entertainment",Hiru TV (360p) [Not 24/7]
 https://tv.hiruhost.com:1936/8012/8012/playlist.m3u8
-#EXTINF:-1 tvg-id="ImaiTV.lk" tvg-logo="" group-title="Entertainment",Imai TV (1080p) [Not 24/7]
+#EXTINF:-1 tvg-id="ImaiTV.lk" tvg-logo="/logos/lk/ImaiTV.png" group-title="Entertainment",Imai TV (1080p) [Not 24/7]
 https://live20.bozztv.com/akamaissh101/ssh101/imaitv/playlist.m3u8
 #EXTINF:-1 tvg-id="ITN.lk" tvg-logo="/logos/lk/ITN.png" group-title="Entertainment",ITN (YouTube) [Not 24/7]
 https://www.youtube.com/embed/live_stream?channel=UCQTcNhAZidy1i9wwmdgf2Lw

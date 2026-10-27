@@ -57,7 +57,7 @@ async function testList(presetName, noun) {
     const option = options.nth(i);
     const name = (await option.locator('p').first().innerText()).trim();
     streamIssues = [];
-    const clickedAt = Date.now();
+    const clickedAt = await page.evaluate(() => performance.now());
     await option.click();
     // Official YouTube lives play in YouTube's own iframe; the page can only
     // check that the embed loads. Their live status is checked by
@@ -79,7 +79,7 @@ async function testList(presetName, noun) {
         null,
         { timeout: 30000 },
       );
-      const readyMs = Date.now() - clickedAt;
+      const readyMs = Number(await page.locator('video').getAttribute('data-av-ready')) - clickedAt;
       const av = await page.evaluate(() => {
         const v = document.querySelector('video');
         const q = v.getVideoPlaybackQuality?.();

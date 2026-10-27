@@ -4,7 +4,7 @@ the copies, so they load from our own origin.
 
 Usage: self_host_logos.py PLAYLIST.m3u OUT_DIR URL_PREFIX
 For each entry whose tvg-logo is an http(s) URL, saves OUT_DIR/<tvg-id>.png
-(max 256px) or .svg and rewrites tvg-logo to URL_PREFIX/<file>. Logos that
+(max 256px, at least 48px) or .svg and rewrites tvg-logo to URL_PREFIX/<file>. Logos that
 cannot be downloaded are cleared, so the site shows the station's initials
 instead of a broken image. Needs Pillow.
 """
@@ -28,6 +28,9 @@ def save(data, dest_base):
     if img.format == 'ICO':
         # Use the largest icon in the file
         img.size = max(img.ico.sizes())
+    if max(img.size) < 48:
+        # Too small to show well (also Google's generic globe for unknown sites)
+        raise ValueError(f'logo too small ({img.size[0]}x{img.size[1]})')
     img = img.convert('RGBA')
     img.thumbnail((256, 256))
     img.save(dest_base + '.png', optimize=True)

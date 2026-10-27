@@ -177,7 +177,8 @@ export default function VideoPlayer({
       released = true;
       holdingSound.current = false;
       clearTimeout(audioOnlyTimer);
-      video.setAttribute('data-av-ready', '');
+      // Time sound and picture started (performance.now()), read by the smoke test
+      video.setAttribute('data-av-ready', String(Math.round(performance.now())));
       if (!video.videoWidth) setNoPicture(true);
       const wantSound = !getMuted();
       // Without a user gesture on the page the browser would pause unmuted
