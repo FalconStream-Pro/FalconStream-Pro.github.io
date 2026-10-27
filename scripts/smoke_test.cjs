@@ -85,10 +85,12 @@ async function main() {
     );
     log(h264, `Test browser can decode H.264/AAC${h264 ? '' : ' (set BROWSER_CHANNEL=chrome)'}`);
     let playing = 0;
+    const startTimes = [];
     for (let i = 0; i < count; i++) {
       const option = options.nth(i);
       const name = (await option.locator('p').first().innerText()).trim();
       streamIssues = [];
+      const clickedAt = Date.now();
       await option.click();
       // Official YouTube lives play in YouTube's own iframe; the page can only
       // check that the embed loads. Their live status is checked by
@@ -100,7 +102,21 @@ async function main() {
         continue;
       }
       let ok = false;
+      let timing = '';
       try {
+        // The player holds the sound back until the picture moves, so
+        // data-av-ready marks the moment picture and sound both run.
+        await page.waitForFunction(
+          () => document.querySelector('video')?.hasAttribute('data-av-ready'),
+          null,
+          { timeout: 30000 },
+        );
+        const readyMs = Date.now() - clickedAt;
+        const av = await page.evaluate(() => {
+          const v = document.querySelector('video');
+          const q = v.getVideoPlaybackQuality?.();
+          return { muted: v.muted, frames: q ? q.totalVideoFrames : -1, width: v.videoWidth };
+        });
         await page.waitForFunction(
           () => {
             const v = document.querySelector('video');
@@ -109,6 +125,11 @@ async function main() {
           null,
           { timeout: 30000 },
         );
+        timing = ` — picture and sound in ${(readyMs / 1000).toFixed(1)} s (${av.width ? `${av.frames} frames decoded` : 'audio only'})`;
+        startTimes.push(readyMs);
+        if (av.muted) {
+          log(false, `Sound stays muted after the picture starts: ${name}`);
+        }
         ok = true;
       } catch {
         // reported below
@@ -127,12 +148,17 @@ async function main() {
         const issues = [...new Set(streamIssues)].filter((s) => !/\.(png|jpe?g|webp|svg|gif)(\?|$)/i.test(s));
         if (issues.length) console.log(`     ${issues.slice(0, 8).join('\n     ')}`);
       }
-      log(ok, `Plays: ${name}${detail}`);
+      log(ok, `Plays: ${name}${ok ? timing : detail}`);
       if (ok) playing++;
       // Pause between channels so streams are not all opened at once
       await page.waitForTimeout(500);
     }
     log(playing > 0, `${playing} Sri Lanka HLS channels play in the browser`);
+    if (startTimes.length) {
+      const sorted = [...startTimes].sort((x, y) => x - y);
+      const median = sorted[Math.floor(sorted.length / 2)] / 1000;
+      log(true, `Start-up time (click to moving picture with sound): median ${median.toFixed(1)} s, slowest ${(sorted.at(-1) / 1000).toFixed(1)} s`);
+    }
   }
 
   log(pageErrors.length === 0, `Uncaught page errors: ${pageErrors.length}${pageErrors.length ? ` (${pageErrors.slice(0, 3).join('; ')})` : ''}`);
