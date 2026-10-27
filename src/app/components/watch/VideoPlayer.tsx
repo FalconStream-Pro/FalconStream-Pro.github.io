@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Hls, { type Level } from 'hls.js';
+import Hls, { type HlsConfig, type Level } from 'hls.js';
 import {
   Play, Pause, Volume2, Volume1, VolumeX, Maximize, Minimize, PictureInPicture2,
   Settings2, RotateCcw, SkipForward, Loader2, WifiOff, ShieldCheck, Check,
@@ -27,6 +27,33 @@ interface VideoPlayerProps {
 const START_TIMEOUT_MS = 25000;
 const HIDE_CONTROLS_MS = 2800;
 const PROGRESSIVE_RE = /\.(mp4|webm|ogv|ogg|mp3|m4a|aac|wav)(\?|#|$)/i;
+// Sound is held back until the picture is moving, but never for longer than
+// this much playback (a stream whose video is broken still gets its audio)
+const MAX_SOUND_HOLD_S = 6;
+// An audio-only stream has no picture to wait for
+const AUDIO_ONLY_AFTER_MS = 1500;
+
+export const HLS_CONFIG: Partial<HlsConfig> = {
+  enableWorker: true,
+  // hls.js normally downloads a whole low-quality fragment first just to
+  // measure bandwidth, and throws it away. Start from an estimate instead, and
+  // fetch the first fragment while the playlist is still being parsed.
+  testBandwidth: false,
+  abrEwmaDefaultEstimate: 1_500_000,
+  startFragPrefetch: true,
+  // No point downloading 1080p into a small player
+  capLevelToPlayerSize: true,
+  backBufferLength: 30,
+  maxMaxBufferLength: 60,
+  manifestLoadingMaxRetry: 2,
+  levelLoadingMaxRetry: 2,
+  fragLoadingMaxRetry: 3,
+};
+
+type FrameCallbackVideo = HTMLVideoElement & {
+  requestVideoFrameCallback?: (cb: (now: number, meta: { mediaTime: number }) => void) => number;
+  cancelVideoFrameCallback?: (handle: number) => void;
+};
 
 function IconButton({
   label, onClick, children, className, pressed,
@@ -61,6 +88,8 @@ export default function VideoPlayer({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // True while sound is held back waiting for the first moving picture
+  const holdingSound = useRef(false);
 
   const [status, setStatus] = useState<Status>('loading');
   const [error, setError] = useState('');
@@ -112,8 +141,14 @@ export default function VideoPlayer({
     setLevel(-1);
     setQualityOpen(false);
     setAutoMuted(false);
-    video.muted = getMuted();
+    video.removeAttribute('data-av-ready');
     video.volume = getVolume();
+    // Live segments often start mid-GOP: the first picture then stays frozen
+    // (or black) while the audio already plays. Start muted and only let the
+    // sound in once frames are actually moving, so sound and picture start
+    // together.
+    holdingSound.current = true;
+    video.muted = true;
 
     let networkRetries = 0;
     let mediaRetries = 0;
@@ -127,18 +162,66 @@ export default function VideoPlayer({
     const timeout = setTimeout(() => {
       if (!started) fail('This channel is not responding right now. It may be offline or blocked in your region.');
     }, START_TIMEOUT_MS);
-    const onPlaying = () => { started = true; };
+    let released = false;
+    let playStart = -1;
+    let frameHandle = 0;
+    let audioOnlyTimer: ReturnType<typeof setTimeout> | undefined;
+    const fv = video as FrameCallbackVideo;
+    const releaseSound = () => {
+      if (released) return;
+      released = true;
+      holdingSound.current = false;
+      clearTimeout(audioOnlyTimer);
+      video.setAttribute('data-av-ready', '');
+      const wantSound = !getMuted();
+      // Without a user gesture on the page the browser would pause unmuted
+      // playback: stay muted and offer "Tap to unmute" instead.
+      const activation = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
+      if (wantSound && activation && !activation.hasBeenActive) {
+        setAutoMuted(true);
+      } else if (wantSound) {
+        video.muted = false;
+        setTimeout(() => {
+          if (video.paused && !video.ended) {
+            video.muted = true;
+            video.play().catch(() => setStatus('blocked'));
+            setAutoMuted(true);
+          }
+        }, 300);
+      }
+      setMuted(video.muted);
+      if (!video.paused) setStatus('playing');
+    };
+    const onFrame = (_now: number, meta: { mediaTime: number }) => {
+      if (released) return;
+      if (playStart < 0) playStart = meta.mediaTime;
+      else if (meta.mediaTime > playStart) return releaseSound();
+      frameHandle = fv.requestVideoFrameCallback!(onFrame);
+    };
+    if (fv.requestVideoFrameCallback) frameHandle = fv.requestVideoFrameCallback(onFrame);
+    let firstTime = -1;
+    const onTimeUpdate = () => {
+      if (released) return;
+      if (firstTime < 0) firstTime = video.currentTime;
+      // No frame callbacks (old browser, hidden tab) or frames never move
+      if (!fv.requestVideoFrameCallback || video.currentTime - firstTime > MAX_SOUND_HOLD_S) releaseSound();
+    };
+    const onPlaying = () => {
+      started = true;
+      if (!released && !audioOnlyTimer) {
+        audioOnlyTimer = setTimeout(() => {
+          if (!video.videoWidth) releaseSound();
+        }, AUDIO_ONLY_AFTER_MS);
+      }
+    };
     video.addEventListener('playing', onPlaying);
+    video.addEventListener('timeupdate', onTimeUpdate);
 
     const proxied = (u: string) => buildProxiedUrl(u, proxyUrl);
 
     if (!PROGRESSIVE_RE.test(url) && Hls.isSupported()) {
       const hls = new Hls({
-        enableWorker: true,
-        backBufferLength: 30,
-        manifestLoadingMaxRetry: 2,
-        levelLoadingMaxRetry: 2,
-        fragLoadingMaxRetry: 3,
+        ...HLS_CONFIG,
         ...(proxyUrl
           ? { xhrSetup: (xhr: XMLHttpRequest, u: string) => xhr.open('GET', proxied(u), true) }
           : {}),
@@ -188,7 +271,12 @@ export default function VideoPlayer({
 
     return () => {
       clearTimeout(timeout);
+      clearTimeout(audioOnlyTimer);
+      if (frameHandle) fv.cancelVideoFrameCallback?.(frameHandle);
+      released = true;
+      holdingSound.current = false;
       video.removeEventListener('playing', onPlaying);
+      video.removeEventListener('timeupdate', onTimeUpdate);
       video.removeEventListener('error', onNativeError);
       hlsRef.current?.destroy();
       hlsRef.current = null;
@@ -201,10 +289,12 @@ export default function VideoPlayer({
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const onPlaying = () => setStatus('playing');
+    // While sound is held back the picture is not moving yet: keep "Tuning in"
+    const onPlaying = () => { if (!holdingSound.current) setStatus('playing'); };
     const onPause = () => setStatus((s) => (s === 'error' ? s : 'paused'));
     const onWaiting = () => setStatus((s) => (s === 'playing' ? 'buffering' : s));
     const onVolume = () => {
+      if (holdingSound.current) return;
       setMuted(video.muted);
       setVolume(video.volume);
     };
@@ -257,6 +347,13 @@ export default function VideoPlayer({
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
+    if (holdingSound.current) {
+      // Applied when the sound is released
+      const next = !getMuted();
+      saveMuted(next);
+      setMuted(next);
+      return;
+    }
     video.muted = !video.muted;
     if (!video.muted && video.volume === 0) video.volume = 0.5;
     saveMuted(video.muted);
@@ -267,9 +364,14 @@ export default function VideoPlayer({
     const video = videoRef.current;
     if (!video) return;
     video.volume = v;
-    video.muted = v === 0;
     saveVolume(v);
-    saveMuted(video.muted);
+    saveMuted(v === 0);
+    if (holdingSound.current) {
+      setVolume(v);
+      setMuted(v === 0);
+      return;
+    }
+    video.muted = v === 0;
     setAutoMuted(false);
   };
 

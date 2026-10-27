@@ -1,0 +1,13 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="Rupavahini.lk@SD" group-title="Entertainment",Rupavahini (720p, bozztv)
+https://rpn.bozztv.com/slrclive/slrc/slrclive/index.m3u8
+#EXTINF:-1 tvg-id="AhasaTV.lk@SD" group-title="Entertainment",Ahasa TV (1080p)
+https://ahasatv.lk/live-stream/rewind-3600.m3u8
+#EXTINF:-1 tvg-id="AsiaTV.lk@HD" group-title="Entertainment",Asia TV (720p)
+https://stream.asiatvnet.com/1/live/master.m3u8
+#EXTINF:-1 tvg-id="Swarnavahini.lk" group-title="Entertainment",Swarnavahini (480p, ebc proxy)
+https://teledrama.ebc.lk/TTT/proxy.php
+#EXTINF:-1 tvg-id="ImaiTV.lk@SD" group-title="Entertainment",Imai TV (1080p)
+https://live20.bozztv.com/akamaissh101/ssh101/imaitv/playlist.m3u8
+#EXTINF:-1 tvg-id="VerbumTV.lk@SD" group-title="Religious",Verbum TV
+https://video-eu1.streamerr.co/hls/scb80244b91/live.m3u8

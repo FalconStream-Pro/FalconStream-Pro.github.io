@@ -10,6 +10,9 @@ on:
       - 'scripts/diagnose_stream.py'
       - 'scripts/find_streams.py'
       - 'scripts/check_youtube_live.py'
+      - 'scripts/bench_player.cjs'
+      - 'scripts/find_radio.py'
+      - 'public/playlists/sri-lanka/sources/new-candidates.m3u'
       - '.github/workflows/find-streams.yml'
 
 permissions:
@@ -20,6 +23,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Find Sri Lankan radio stations
+        run: python3 scripts/find_radio.py radio-lk.m3u LK
+
+      - name: Benchmark the player on the Sri Lanka channels (old vs new hls.js settings)
+        env:
+          BROWSER_CHANNEL: chrome
+        run: node scripts/bench_player.cjs public/playlists/sri-lanka/lk.m3u --configs old,new --rounds 2
+
+      - name: Play the new candidate streams and radio stations in Chrome
+        env:
+          BROWSER_CHANNEL: chrome
+        run: node scripts/bench_player.cjs public/playlists/sri-lanka/sources/new-candidates.m3u radio-lk.m3u
 
       - name: Diagnose streams that fail in the browser
         run: python3 scripts/diagnose_stream.py https://teledrama.ebc.lk/TTT/proxy.php
@@ -59,11 +80,6 @@ jobs:
           https://www.channeleye.lk/
           https://nethratv.lk/
           https://www.vasantham.lk/
-
-      - name: Install Playwright
-        run: |
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
 
       - name: Record stream requests made by channel pages
         env:
