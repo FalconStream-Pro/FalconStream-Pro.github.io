@@ -2,19 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { Play, Loader2, Radio, CheckCircle2 } from 'lucide-react';
-import { parseM3U, Channel } from '@/lib/m3uParser';
+import { parseM3U, describeChannel, Channel } from '@/lib/m3uParser';
 import type { PresetPlaylist } from '@/lib/presetPlaylists';
 import ChannelLogo from '../ChannelLogo';
 
 interface SpotlightProps {
   preset: PresetPlaylist;
+  /** Sri Lankan radio stations, offered next to the TV channels */
+  radioPreset?: PresetPlaylist;
   loading: boolean;
   disabled: boolean;
   onWatch: (preset: PresetPlaylist, channelId?: string) => void;
 }
 
 /** Hero card for the self-hosted, tested playlist (Sri Lanka). */
-export default function Spotlight({ preset, loading, disabled, onWatch }: SpotlightProps) {
+export default function Spotlight({ preset, radioPreset, loading, disabled, onWatch }: SpotlightProps) {
   const [channels, setChannels] = useState<Channel[] | null>(null);
 
   useEffect(() => {
@@ -65,6 +67,18 @@ export default function Spotlight({ preset, loading, disabled, onWatch }: Spotli
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4 fill-current" />}
               Start watching
             </button>
+            {radioPreset && (
+              <button
+                type="button"
+                onClick={() => onWatch(radioPreset)}
+                disabled={disabled}
+                aria-label={`Load ${radioPreset.name}`}
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-border bg-background/70 px-5 text-sm font-semibold text-foreground backdrop-blur transition hover:bg-muted disabled:opacity-60"
+              >
+                <Radio className="h-4 w-4" />
+                Listen to radio
+              </button>
+            )}
             <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Free · No sign-up
             </span>
@@ -74,7 +88,10 @@ export default function Spotlight({ preset, loading, disabled, onWatch }: Spotli
         <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {channels === null
             ? Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton aspect-square rounded-2xl" />)
-            : channels.slice(0, 8).map((c) => (
+            : channels
+              // A channel listed twice (e.g. its stream and its YouTube live) shows once
+              .filter((c, i, all) => all.findIndex((o) => describeChannel(o.name).title === describeChannel(c.name).title) === i)
+              .slice(0, 8).map((c) => (
               <button
                 key={c.id}
                 type="button"

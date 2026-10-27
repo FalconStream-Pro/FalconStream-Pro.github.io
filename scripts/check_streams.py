@@ -66,14 +66,20 @@ def check(url):
     current = url
     for depth in range(5):
         try:
-            final, headers, body = fetch(current)
+            # Radio streams never end: read only the start of the first response
+            final, headers, body = fetch(current, 128_000 if depth == 0 else 2_000_000)
         except Exception as e:  # noqa: BLE001 - report any network error
             return False, f'{type(e).__name__}: {str(e)[:80]}', cors
         if depth == 0:
             cors = headers.get('Access-Control-Allow-Origin')
         if not body.lstrip().startswith(b'#EXTM3U'):
+            ctype = (headers.get('Content-Type') or '').split(';')[0].strip().lower()
+            if depth == 0 and (ctype.startswith('audio/') or ctype == 'application/ogg'):
+                if len(body) < 8000:
+                    return False, f'audio stream too short ({len(body)} B)', cors
+                return True, f'audio stream ({ctype})', cors
             if depth == 0:
-                return False, 'not an HLS playlist', cors
+                return False, f'not an HLS playlist ({ctype or "no content type"})', cors
             if len(body) < 1000:
                 return False, f'segment too small ({len(body)} B)', cors
             return True, f'segment OK ({len(body) // 1024} KB)', cors
@@ -116,7 +122,8 @@ def main():
         if cors == 'youtube':
             browser = 'YouTube embed' if ok else '-'
         else:
-            browser = 'yes' if ok and url.startswith('https://') and cors else (
+            # <audio>/<video> play cross-origin audio without CORS; hls.js needs it
+            browser = 'yes' if ok and url.startswith('https://') and (cors or detail.startswith('audio')) else (
                 'needs proxy' if ok else '-')
         rows.append(f"| {'✅' if ok else '❌'} | {name} | {browser} | {detail} | {url} |")
         if ok:

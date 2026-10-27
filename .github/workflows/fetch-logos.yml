@@ -1,12 +1,14 @@
 name: Fetch channel logos
 
-# Downloads logos for the Sri Lanka channels into public/logos/lk and
-# commits them to the branch the workflow runs on.
+# Downloads logos for the Sri Lanka channels into public/logos/lk, copies the
+# radio stations' logos into public/logos/lk-radio, and commits them to the branch the workflow runs on.
 on:
   workflow_dispatch:
   pull_request:
     paths:
       - 'scripts/fetch_logos.py'
+      - 'scripts/self_host_logos.py'
+      - 'public/playlists/sri-lanka/radio.m3u'
       - '.github/workflows/fetch-logos.yml'
 
 permissions:
@@ -29,13 +31,16 @@ jobs:
           python3 scripts/fetch_logos.py public/logos/lk
           Rupavahini ChannelEye NethraTV ITN VasanthamTV TVDerana AdaDerana24x7
           SirasaTV ShakthiTV TV1 HiruTV Swarnavahini SiyathaTV JayaTV TalentTV
-          VerbumTV TheBuddhist PragnaTV SathiTV TNLTV
+          VerbumTV TheBuddhist PragnaTV SathiTV TNLTV ImaiTV AhasaTV AsiaTV
+
+      - name: Self-host the radio stations' logos
+        run: python3 scripts/self_host_logos.py public/playlists/sri-lanka/radio.m3u public/logos/lk-radio /logos/lk-radio
 
       - name: Commit logos
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/logos/lk
+          git add public/logos public/playlists/sri-lanka/radio.m3u
           git diff --cached --quiet && { echo "No logo changes"; exit 0; }
-          git commit -m "Add self-hosted Sri Lanka channel logos (from iptv-org/database)"
+          git commit -m "Add self-hosted Sri Lanka channel and radio logos"
           git push

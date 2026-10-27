@@ -17,6 +17,7 @@ export interface SavedChannel {
   url: string;
   logo: string;
   group: string;
+  radio?: boolean;
   /** Preset id the channel came from, if any, so it can be reopened in context */
   playlistId?: string;
   playlistName?: string;
@@ -52,6 +53,7 @@ export function toSaved(
     url: channel.url,
     logo: channel.logo,
     group: channel.group,
+    ...(channel.radio ? { radio: true } : {}),
     playlistId: playlist?.id,
     playlistName: playlist?.name,
     timestamp: Date.now(),
@@ -59,7 +61,10 @@ export function toSaved(
 }
 
 export function savedToChannel(s: SavedChannel): Channel {
-  return { id: s.id, name: s.name, url: s.url, logo: s.logo, group: s.group, tvgId: '', tvgName: '' };
+  return {
+    id: s.id, name: s.name, url: s.url, logo: s.logo, group: s.group, tvgId: '', tvgName: '',
+    ...(s.radio ? { radio: true } : {}),
+  };
 }
 
 export const getConsent = () => read<boolean>(CONSENT_KEY, false) === true;

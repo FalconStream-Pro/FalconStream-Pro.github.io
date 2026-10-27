@@ -6,6 +6,8 @@ export interface Channel {
   group: string;
   tvgId: string;
   tvgName: string;
+  /** Audio-only station (`radio="true"`), played with the browser's own player */
+  radio?: boolean;
 }
 
 /**
@@ -36,6 +38,7 @@ export function parseM3U(content: string): Channel[] {
       const groupMatch = line.match(/group-title="([^"]*)"/);
       const tvgIdMatch = line.match(/tvg-id="([^"]*)"/);
       const tvgNameMatch = line.match(/tvg-name="([^"]*)"/);
+      const radio = /\bradio="true"/i.test(line);
 
       currentMeta = {
         name: nameMatch ? nameMatch[1].trim() : 'Unknown Channel',
@@ -44,6 +47,7 @@ export function parseM3U(content: string): Channel[] {
         group: groupMatch && groupMatch[1] ? groupMatch[1].split(';')[0].trim() : 'Uncategorized',
         tvgId: tvgIdMatch ? tvgIdMatch[1] : '',
         tvgName: tvgNameMatch ? tvgNameMatch[1] : '',
+        radio,
       };
     } else if (line && !line.startsWith('#') && currentMeta) {
       let id = channelId(line);
@@ -58,6 +62,7 @@ export function parseM3U(content: string): Channel[] {
         group: currentMeta.group || 'Uncategorized',
         tvgId: currentMeta.tvgId || '',
         tvgName: currentMeta.tvgName || '',
+        ...(currentMeta.radio ? { radio: true } : {}),
       });
       currentMeta = null;
     }

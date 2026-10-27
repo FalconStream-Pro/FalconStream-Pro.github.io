@@ -1,0 +1,57 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="HiruFM.lk" tvg-logo="https://upload.wikimedia.org/wikipedia/en/8/8b/Hiru_FM_logo.png" group-title="FM stations" radio="true",Hiru FM
+https://radio.lotustechnologieslk.net:2020/stream/hirufmgarden
+#EXTINF:-1 tvg-id="ShakthiFM.lk" tvg-logo="https://shakthifm.com/images/logo.webp" group-title="FM stations" radio="true",Shakthi FM
+https://mbc.thestreamtech.com:8086/stream
+#EXTINF:-1 tvg-id="SunFM.lk" tvg-logo="https://www.sunfm.lk/assets/images/liveradio/logo.png" group-title="FM stations" radio="true",Sun FM
+https://radio.lotustechnologieslk.net:2020/stream/sunfmgarden
+#EXTINF:-1 tvg-id="GoldFM.lk" tvg-logo="https://www.goldfm.lk/images/lllistenlivelogo.jpg" group-title="FM stations" radio="true",Gold FM
+https://radio.lotustechnologieslk.net:2020/stream/goldfmgarden
+#EXTINF:-1 tvg-id="NethFM.lk" tvg-logo="https://nethfm.lk/radio/NETH%20FM%20Live%20Radio_files/neth1.jpg" group-title="FM stations" radio="true",Neth FM
+https://cp11.serverse.com/proxy/nethfm/stream
+#EXTINF:-1 tvg-id="SiyathaFM.lk" tvg-logo="https://siyathafm.lk/apple-touch-icon.png" group-title="FM stations" radio="true",Siyatha FM
+https://srv01.onlineradio.voaplus.com/siyathafm
+#EXTINF:-1 tvg-id="YFM.lk" tvg-logo="https://myy.lk/wp-content/uploads/2023/12/my-y-2023-12-5.png" group-title="FM stations" radio="true",Y FM
+https://mbc.thestreamtech.com:7032/index.html
+#EXTINF:-1 tvg-id="StarFM.lk" tvg-logo="https://www.starfm.lk/favicon.ico" group-title="FM stations" radio="true",Star FM
+https://stream.starfm.lk:12025/stream
+#EXTINF:-1 tvg-id="KissFM.lk" tvg-logo="https://kissfm.lk/kisslogo.png" group-title="FM stations" radio="true",Kiss FM
+https://srv02.onlineradio.voaplus.com/kissfm
+#EXTINF:-1 tvg-id="RealRadio.lk" tvg-logo="" group-title="FM stations" radio="true",Real Radio 97.1
+https://srv02.onlineradio.voaplus.com/realfm
+#EXTINF:-1 tvg-id="Lite878.lk" tvg-logo="" group-title="FM stations" radio="true",Lite 87.8
+https://srv02.onlineradio.voaplus.com/lite878
+#EXTINF:-1 tvg-id="Lakhanda.lk" tvg-logo="https://lakhandaradio.lk/wp-content/uploads/2023/05/Lakhanda-Radio.svg" group-title="FM stations" radio="true",Lakhanda Radio
+https://cp12.serverse.com/proxy/itnfm?mp=/stream
+#EXTINF:-1 tvg-id="VasanthamFM.lk" tvg-logo="https://www.vasanthamfm.lk/wp-content/uploads/2023/05/Vasantham-FM.svg" group-title="FM stations" radio="true",Vasantham FM
+https://cp12.serverse.com/proxy/vasanthamfm?mp=/stream
+#EXTINF:-1 tvg-id="KothmaleFM.lk" tvg-logo="https://kothmalefm.lk/images/3ee4162b8a1d0c8d68b7f4a210f0d077.png" group-title="FM stations" radio="true",Kothmale FM
+https://s11.myradiostream.com:25116/listen.mp3
+#EXTINF:-1 tvg-id="SLBCTamil.lk" tvg-logo="" group-title="FM stations" radio="true",SLBC Tamil National Service
+https://stream-32.zeno.fm/xekhrn4zetzuv?zs=KXT1gTNYSemcxyslV6-vdA
+#EXTINF:-1 tvg-id="ClassicRadio.lk" tvg-logo="" group-title="FM stations" radio="true",Classic Radio
+https://cp11.serverse.com/proxy/classic/stream
+#EXTINF:-1 tvg-id="Legends966.lk" tvg-logo="https://legends966.com/images/legends966.png" group-title="FM stations" radio="true",Legends 96.6
+https://mbc.thestreamtech.com:8585/stream
+#EXTINF:-1 tvg-id="RadioPlus.lk" tvg-logo="https://radioplus.lk/wp-content/uploads/2024/04/Radio-plus-Logo-2-2.png" group-title="FM stations" radio="true",Radio Plus
+https://altair.streamerr.co/stream/8036
+#EXTINF:-1 tvg-id="Rangiri.lk" tvg-logo="" group-title="FM stations" radio="true",Rangiri Sri Lanka
+https://rangiri.radioca.st/stream
+#EXTINF:-1 tvg-id="RadioPlusHitz.lk" tvg-logo="https://radioplus.lk/wp-content/uploads/2024/04/Radio-plus-Logo-2-2.png" group-title="Online radio" radio="true",Radio Plus Hitz
+https://altair.streamerr.co/stream/8054
+#EXTINF:-1 tvg-id="IsaiFM.lk" tvg-logo="https://tamilocean.com/uploads/1790057342268-01a0c7ba-cb4c-7235-adc4-ff4ca4f3fc36.webp" group-title="Online radio" radio="true",Isai FM Tamil
+https://stream.tamilocean.com/isailive/
+#EXTINF:-1 tvg-id="FreeFM.lk" tvg-logo="" group-title="Online radio" radio="true",Free FM
+https://stream-49.zeno.fm/1tcs4fbw7rquv?zs=uMl9BSttRSuqxlf3fWqc8g
+#EXTINF:-1 tvg-id="GeeFM.lk" tvg-logo="" group-title="Online radio" radio="true",Gee FM
+https://stream.zeno.fm/jiylwkly3ufvv
+#EXTINF:-1 tvg-id="Radioeka.lk" tvg-logo="" group-title="Online radio" radio="true",Radioeka
+https://stream.zeno.fm/n86me57rzv8uv
+#EXTINF:-1 tvg-id="RadioLK.lk" tvg-logo="https://i.imgur.com/RWR11qb.png" group-title="Online radio" radio="true",Radio.lk
+https://stream.zeno.fm/fz1quc2fzacuv
+#EXTINF:-1 tvg-id="DreamzLanka.lk" tvg-logo="" group-title="Online radio" radio="true",DreamzLanka FM
+https://radio-station.hadawatha.lk/listen/dreamzlanka-fm/radio.mp3
+#EXTINF:-1 tvg-id="Hadawatha.lk" tvg-logo="" group-title="Online radio" radio="true",Hadawatha FM
+https://radio-station.hadawatha.lk/listen/hadawatha-fm/radio.mp3
+#EXTINF:-1 tvg-id="JothiFM.lk" tvg-logo="" group-title="Online radio" radio="true",Jothi FM
+https://radio-station.hadawatha.lk/listen/jothi-fm/radio.mp3
